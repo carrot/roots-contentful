@@ -49,7 +49,60 @@ module.exports =
 # ...
 ```
 
-### Options
+### Usage
+
+#### Accessing Content in Views
+
+A `contentful` view helper object will be passed into every view containing your content. Each content type will be set as a property on `contentful` using the `name` option in your `app.coffee` configuration. For example with the `app.coffee` file above, you can access the blog posts like this:
+
+```jade
+  h1 Hello World
+  ul
+    - for post in contentful.posts
+      li
+        h2= post.title
+        p= markdown(post.body)
+```
+
+#### Single Entry Views
+
+If a `template` option is defined for a Content Type in `app.coffee`, roots will compile a single page view for each entry in that Content Type collection. The entry will also have a `_url` key that returns the path to the single page view (so you can create links on an index page for example).
+
+#### The Entry Object
+
+Contentful's [documentation](https://www.contentful.com/developers/documentation/content-delivery-api/#getting-entry) shows the response the API returns when fetching an entry. It looks something like this:
+
+```json
+{
+  "sys": {
+    "type": "Entry",
+    "id": "cat"
+    # ...
+  },
+  "fields": {
+    "title": "Wow. Such title. Much viral",
+    "author": "The Doge of Venice"
+    # ...
+  }
+}
+```
+
+As a convenience, the entry object roots-contentful makes available in your views will have the `fields` key's value set one level higher on the object. System metadata remains accessible on the `sys` key and roots-contentful will raise an error if you have a field named `sys`. Thus, the entry object above will have this structure inside your views:
+
+```json
+{
+  "title": "Wow. Such title. Much viral",
+  "author": "The Doge of Venice"
+  # ... the rest of the fields
+  "sys": {
+    "type": "Entry",
+    "id": "cat"
+    # ...
+  }
+}
+```
+
+### Configuration Options
 
 #### access_token
 
@@ -84,7 +137,7 @@ Optional. Takes an object with different filter criteria, see examples of how to
 
 #### path
 
-Optional. Provide a function that returns a string of the relative path to the output file for a given entry without the extension. First argument passed into the function is the entry. Default is `<name>/<slug>` where `slug` is the [slugified](http://stringjs.com/#methods/slugify) output of the entry's `displayField` (a property of the Content Type), and `name` is the provided `name` option above or the default value.
+Optional. Provide a function that returns a string of the relative path to the output file for a given entry without the extension. First argument passed into the function is the entry. Default is `<name>/<slug>` where `slug` is the [slugified](http://stringjs.com/#methods/slugify) output of the entry's `displayField` (a property of the Content Type), and `name` is the provided `name` option above or the default value. This option is ignored if no `template` is given.
 
 ### License & Contributing
 
