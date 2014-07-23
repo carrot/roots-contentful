@@ -22,7 +22,7 @@ after ->
 
 describe 'development', ->
 
-  before (done) -> compile_fixture.call(@, 'basic', done)
+  before (done) -> compile_fixture.call(@, 'basic', -> done())
 
   it 'compiles basic project', ->
     p = path.join(@public, 'index.html')
