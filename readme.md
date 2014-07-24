@@ -1,7 +1,7 @@
 Roots Contentful
 ================
 
-[![npm](https://badge.fury.io/js/roots-contentful.png)](http://badge.fury.io/js/roots-contentful) [![tests](https://travis-ci.org/carrot/roots-contentful.png?branch=master)](https://travis-ci.org/carrot/roots-contentful) [![dependencies](https://david-dm.org/carrot/roots-contentful.png?theme=shields.io)](https://david-dm.org/carrot/roots-contentful)
+[![npm](https://badge.fury.io/js/roots-contentful.png)](http://badge.fury.io/js/roots-contentful) [![tests](https://travis-ci.org/carrot/roots-contentful.png?branch=master)](https://travis-ci.org/carrot/roots-contentful) [![dependencies](https://david-dm.org/carrot/roots-contentful.png?theme=shields.io)](https://david-dm.org/carrot/roots-contentful) [![Coverage Status](https://img.shields.io/coveralls/carrot/roots-contentful.svg)](https://coveralls.io/r/carrot/roots-contentful?branch=implement-view-helper)
 
 An extension for using roots with the Contentful CMS API.
 
