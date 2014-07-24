@@ -5,9 +5,12 @@ contentful = require 'contentful'
 pluralize  = require 'pluralize'
 
 errors =
-  no_token:     'Missing required options for roots-contentful. Please ensure `access_token` and `space_id` are present.'
-  no_type_id:   'One or more of your content types is missing an `id` value'
-  sys_conflict: 'One of your content types has `sys` as a field. This is reserved for storing Contentful system metadata, please rename this field to a different value.'
+  no_token: 'Missing required options for roots-contentful. Please ensure
+  `access_token` and `space_id` are present.'
+  no_type_id: 'One or more of your content types is missing an `id` value'
+  sys_conflict:'One of your content types has `sys` as a field. This is reserved
+   for storing Contentful system metadata, please rename this field to a
+   different value.'
 
 module.exports = (opts) ->
   # throw error if missing required config
@@ -28,10 +31,11 @@ module.exports = (opts) ->
 
   configure_content = (types) ->
     W.map types, (t) ->
-      if not t.id then throw new Error errors.no_type_id
-      t.filters ?= {}
+      if not t.id then W.reject(errors.no_type_id)
       if t.name then return W.resolve()
-      return client.contentType(t.id).then (res) ->
+
+      t.filters ?= {}
+      W client.contentType(t.id).then (res) ->
         t.name = pluralize(S(res.name).toLowerCase().underscore().s)
         return t
 
@@ -43,12 +47,12 @@ module.exports = (opts) ->
   ###
 
   get_all_content = (types) ->
-    locals = {}
-    W.map(types, (t) ->
+    W.reduce types, (m, t) ->
       fetch_content(t)
         .then(format_content)
-        .then (c) -> locals[t.name] = c
-    ).yield(locals)
+        .then((c) -> m[t.name] = c)
+        .yield(m)
+    , {}
 
   ###*
    * Fetch entries for a single content type object
@@ -57,7 +61,7 @@ module.exports = (opts) ->
   ###
 
   fetch_content = (type) ->
-    client.entries(_.merge(type.filters, content_type: type.id))
+    W client.entries(_.merge(type.filters, content_type: type.id))
 
   ###*
    * Formats raw response from Contentful
@@ -75,7 +79,7 @@ module.exports = (opts) ->
   ###
 
   format_entry = (e) ->
-    if _.has(e.fields, 'sys') then throw new Error errors.sys_conflict
+    if _.has(e.fields, 'sys') then W.reject(errors.sys_conflict)
     _.assign(_.omit(e, 'fields'), e.fields)
 
   # load content
@@ -89,5 +93,5 @@ module.exports = (opts) ->
       before_pass: (ctx) =>
         # once content is loaded, pass contentful data into locals
         promise.then (locals) =>
-          return if @roots.config.locals.contentful
+          if @roots.config.locals.contentful then return
           @roots.config.locals.contentful = locals
