@@ -19,7 +19,8 @@
     "coffee-script": "1.7.x",
     "mocha": "*",
     "should": "*",
-    "roots": "3.x"
+    "roots": "3.x",
+    "sinon": "~1.10.3"
   },
   "peerDependencies": {
     "roots": "3.x"

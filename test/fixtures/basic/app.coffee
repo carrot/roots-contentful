@@ -4,7 +4,7 @@ module.exports =
   ignores: ["**/_*", "**/.DS_Store"]
   extensions: [
     contentful(
-      access_token: '4e68a90eac414b8e9ccfb504651dbbee8d338dac33ea89579424a2885948905d'
+      access_token: 'YOUR_ACCESS_TOKEN'
       space_id: 'aqzq2qya2jm4'
       content_types: [
         {
