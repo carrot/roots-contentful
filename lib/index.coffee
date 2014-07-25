@@ -31,9 +31,8 @@ module.exports = (opts) ->
 
   configure_content = (types) ->
     W.map types, (t) ->
-      if not t.id then W.reject(errors.no_type_id)
-      if t.name then return W.resolve()
-
+      if not t.id then return W.reject(errors.no_type_id)
+      if t.name then return W.resolve(t)
       t.filters ?= {}
       W client.contentType(t.id).then (res) ->
         t.name = pluralize(S(res.name).toLowerCase().underscore().s)
@@ -79,11 +78,12 @@ module.exports = (opts) ->
   ###
 
   format_entry = (e) ->
-    if _.has(e.fields, 'sys') then W.reject(errors.sys_conflict)
+    if _.has(e.fields, 'sys') then return W.reject(errors.sys_conflict)
     _.assign(_.omit(e, 'fields'), e.fields)
 
   # load content
-  promise = configure_content(opts.content_types).then(get_all_content)
+  promise = configure_content(opts.content_types)
+    .then(get_all_content)
 
   class RootsContentful
     constructor: (@roots) ->
