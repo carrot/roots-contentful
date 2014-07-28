@@ -22,82 +22,71 @@ module.exports = (opts) ->
     accessToken: opts.access_token
     space:       opts.space_id
 
-  ###*
-   * Configures content types set in app.coffee. Sets default values if
-   * optional config options are missing.
-   * @param {Array} types - content_types set in app.coffee extension config
-   * @return {Promise} - returns an array of configured content types
-  ###
-
-  configure_content = (types) ->
-    W.map types, (t) ->
-      if not t.id then return W.reject(errors.no_type_id)
-      if t.name then return W.resolve(t)
-      t.filters ?= {}
-      W client.contentType(t.id).then (res) ->
-        t.name = pluralize(S(res.name).toLowerCase().underscore().s)
-        return t
-
-  ###*
-   * Fetches data from Contentful API, formats the raw data, and constructs
-   * the locals object
-   * @param {Array} types - configured content_type objects
-   * @return {Promise} - returns formatted locals object with all content
-  ###
-
-  get_all_content = (types) ->
-    W.reduce types, (m, t) ->
-      fetch_content(t)
-        .then(format_content)
-        .then((c) -> m[t.name] = c)
-        .yield(m)
-    , {}
-
-  ###*
-   * Fetch entries for a single content type object
-   * @param {Object} type - content type object
-   * @return {Promise} - returns response from Contentful API
-  ###
-
-  fetch_content = (type) ->
-    W client.entries(_.merge(type.filters, content_type: type.id))
-
-  ###*
-   * Formats raw response from Contentful
-   * @param {Object} content - entries API response for a content type
-   * @return {Promise} - returns formatted content type entries object
-  ###
-
-  format_content = (content) ->
-    W.map(content, format_entry)
-
-  ###*
-   * Formats a single entry object from Contentful API response
-   * @param {Object} e - single entry object from API response
-   * @return {Promise} - returns formatted entry object
-  ###
-
-  format_entry = (e) ->
-    if _.has(e.fields, 'sys') then return W.reject(errors.sys_conflict)
-    _.assign(_.omit(e, 'fields'), e.fields)
-
-  content = []
-
   class RootsContentful
     constructor: (@roots) ->
       @roots.config.locals ||= {}
 
     setup: ->
-      if content.length
-        configure_content(opts.content_types)
+      configure_content(opts.content_types)
         .then(get_all_content)
-        .then (res) -> content = res
-      else
-        W.resolve()
+        .then (res) =>
+          @roots.config.locals.contentful = res
 
-    compile_hooks: ->
-      before_pass: (ctx) =>
-        # once content is loaded, pass contentful data into locals
-        promise.then (locals) =>
-          if @roots.config.locals.contentful then return
-          @roots.config.locals.contentful = locals
+    ###*
+     * Configures content types set in app.coffee. Sets default values if
+     * optional config options are missing.
+     * @param {Array} types - content_types set in app.coffee extension config
+     * @return {Promise} - returns an array of configured content types
+    ###
+
+    configure_content = (types) ->
+      W.map types, (t) ->
+        if not t.id then return W.reject(errors.no_type_id)
+        if t.name then return W.resolve(t)
+        t.filters ?= {}
+        W client.contentType(t.id).then (res) ->
+          t.name = pluralize(S(res.name).toLowerCase().underscore().s)
+          return t
+
+    ###*
+     * Fetches data from Contentful API, formats the raw data, and constructs
+     * the locals object
+     * @param {Array} types - configured content_type objects
+     * @return {Promise} - returns formatted locals object with all content
+    ###
+
+    get_all_content = (types) ->
+      W.reduce types, (m, t) ->
+        fetch_content(t)
+          .then(format_content)
+          .then((c) -> m[t.name] = c)
+          .yield(m)
+      , {}
+
+    ###*
+     * Fetch entries for a single content type object
+     * @param {Object} type - content type object
+     * @return {Promise} - returns response from Contentful API
+    ###
+
+    fetch_content = (type) ->
+      W client.entries(_.merge(type.filters, content_type: type.id))
+
+    ###*
+     * Formats raw response from Contentful
+     * @param {Object} content - entries API response for a content type
+     * @return {Promise} - returns formatted content type entries object
+    ###
+
+    format_content = (content) ->
+      W.map(content, format_entry)
+
+    ###*
+     * Formats a single entry object from Contentful API response
+     * @param {Object} e - single entry object from API response
+     * @return {Promise} - returns formatted entry object
+    ###
+
+    format_entry = (e) ->
+      if _.has(e.fields, 'sys') then return W.reject(errors.sys_conflict)
+      _.assign(_.omit(e, 'fields'), e.fields)

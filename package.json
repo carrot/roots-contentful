@@ -8,8 +8,7 @@
   },
   "dependencies": {
     "lodash": "~2.4.1",
-    "minimatch": "0.2.x",
-    "roots-util": "0.0.4",
+    "roots-util": "~0.0.5",
     "contentful": "~0.1.2",
     "when": "~3.4.2",
     "string": "~1.9.0",
@@ -23,7 +22,7 @@
     "istanbul": "0.3.x",
     "mocha": "1.x",
     "roots": "3.x",
-    "sinon": "1.x"
+    "mockery": "~1.4.0"
   },
   "peerDependencies": {
     "roots": "3.x"

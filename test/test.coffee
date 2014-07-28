@@ -1,3 +1,4 @@
+_          = require 'lodash'
 path       = require 'path'
 fs         = require 'fs'
 W          = require 'when'
@@ -8,21 +9,31 @@ Roots      = require 'roots'
 
 compile_fixture = (fixture_name, done) ->
   @public = path.join(fixture_name, 'public')
-  node.call(h.project.compile.bind(h), Roots, fixture_name)
+  h.project.compile(Roots, fixture_name)
 
-stub_contentful = (opts = {}) ->
-  contentful = require 'contentful'
-  sinon.stub(contentful, 'createClient').returns
-    contentType: -> W.resolve(opts.content_type || { name: 'Blog Post' })
-    entries: -> W.resolve [
-      opts.entry || {
-        sys: {'sys': 'data'},
-        fields: {
-          title: 'Default Title'
-          body: 'Default Body'
-        }
-      }
-    ]
+mock_contentful = (opts = {}) ->
+  mockery.enable
+    warnOnUnregistered: false
+    useCleanCache: true
+
+  opts = _.defaults opts,
+    entry:
+      sys:
+        sys: 'data'
+      fields:
+        title: 'Default Title'
+        body: 'Default Body'
+    content_type:
+      name: 'Blog Post'
+
+  mockery.registerMock 'contentful',
+    createClient: ->
+      contentType: -> W.resolve(opts.content_type)
+      entries: -> W.resolve [ opts.entry ]
+
+unmock_contentful = ->
+  mockery.deregisterAll()
+  mockery.disable()
 
 before (done) ->
   h.project.install_dependencies('*', done)
@@ -33,26 +44,30 @@ after ->
 # tests
 
 describe 'config', ->
+  before -> mock_contentful()
+
   it 'should throw an error when missing an access token', ->
-    (-> roots_contentful()).should.throw()
+    (-> compile_fixture.call(@, 'missing_token')).should.throw()
 
   it 'should throw an error without content type id', ->
     compile_fixture.call(@, 'missing_config').should.be.rejected
 
-  describe 'contentful content type fields', ->
-    before -> @stub = stub_contentful(entry: {fields: {sys: 'test'}})
+  after -> unmock_contentful()
 
-    it 'should throw an error if `sys` is a field name', ->
-      compile_fixture.call(@, 'basic').should.be.rejected
+describe 'contentful content type fields', ->
+  before -> mock_contentful(entry: {fields: {sys: 'test'}})
 
-    after -> @stub.restore()
+  it 'should throw an error if `sys` is a field name', ->
+    compile_fixture.call(@, 'basic').should.be.rejected
+
+  after -> unmock_contentful()
 
 describe 'basic compile', ->
   before (done) ->
     @title = 'Throw Some Ds'
     @body  = 'Rich Boy selling crick'
-    @stub  = stub_contentful(entry: {fields: {title: @title, body: @body}})
-    compile_fixture.call(@, 'basic').then(-> done())
+    mock_contentful(entry: {fields: {title: @title, body: @body}})
+    compile_fixture.call(@, 'basic').then(-> done()).catch(done)
 
   it 'compiles basic project', ->
     p = path.join(@public, 'index.html')
@@ -63,20 +78,19 @@ describe 'basic compile', ->
     h.file.contains(p, @title).should.be.true
     h.file.contains(p, @body).should.be.true
 
-  after ->
-    @stub.restore()
+  after -> unmock_contentful()
 
 describe 'custom name for view helper local', ->
   before (done) ->
     @title = 'Throw Some Ds'
     @body  = 'Rich Boy selling crack'
-    @stub  = stub_contentful(entry: {fields: {title: @title, body: @body}})
-    compile_fixture.call(@, 'custom_name', -> done())
+    mock_contentful(entry: {fields: {title: @title, body: @body}})
+    compile_fixture.call(@, 'custom_name').then(-> done())
+      .catch(done)
 
   it 'has contentful data available in views under a custom name', ->
     p = path.join(@public, 'index.html')
     h.file.contains(p, @title).should.be.true
     h.file.contains(p, @body).should.be.true
 
-  after ->
-    @stub.restore()
+  after -> unmock_contentful()
