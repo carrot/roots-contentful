@@ -1,24 +1,19 @@
 path       = require 'path'
 fs         = require 'fs'
-should     = require 'should'
-sinon      = require 'sinon'
 W          = require 'when'
+node       = require 'when/node'
 Roots      = require 'roots'
-_path      = path.join(__dirname, 'fixtures')
-RootsUtil  = require 'roots-util'
-h          = new RootsUtil.Helpers(base: _path)
-contentful = require '../lib'
 
 # setup, teardown, and utils
 
 compile_fixture = (fixture_name, done) ->
   @public = path.join(fixture_name, 'public')
-  h.project.compile(Roots, fixture_name, done)
+  node.call(h.project.compile.bind(h), Roots, fixture_name)
 
 stub_contentful = (opts = {}) ->
   contentful = require 'contentful'
   sinon.stub(contentful, 'createClient').returns
-    contentType: -> W.resolve(opts.content_type || {name: 'Blog Post'})
+    contentType: -> W.resolve(opts.content_type || { name: 'Blog Post' })
     entries: -> W.resolve [
       opts.entry || {
         sys: {'sys': 'data'},
@@ -39,29 +34,25 @@ after ->
 
 describe 'config', ->
   it 'should throw an error when missing an access token', ->
-    (-> contentful({})).should.throw()
+    (-> roots_contentful()).should.throw()
 
-  it 'should throw an error without content type id', (done) ->
-    (-> compile_fixture.call(@, 'missing_config', (e) -> done(new Error e)))
-      .should.throw()
+  it 'should throw an error without content type id', ->
+    compile_fixture.call(@, 'missing_config').should.be.rejected
 
   describe 'contentful content type fields', ->
-    before ->
-      @stub  = stub_contentful(entry: {fields: {sys: 'test'}})
+    before -> @stub = stub_contentful(entry: {fields: {sys: 'test'}})
 
     it 'should throw an error if `sys` is a field name', ->
-      (-> compile_fixture.call(@, 'basic', (e) -> done(new Error e)))
-        .should.throw()
+      compile_fixture.call(@, 'basic').should.be.rejected
 
-    after ->
-      @stub.restore()
+    after -> @stub.restore()
 
 describe 'basic compile', ->
   before (done) ->
     @title = 'Throw Some Ds'
-    @body  = 'Rich Boy selling crack'
+    @body  = 'Rich Boy selling crick'
     @stub  = stub_contentful(entry: {fields: {title: @title, body: @body}})
-    compile_fixture.call(@, 'basic', -> done())
+    compile_fixture.call(@, 'basic').then(-> done())
 
   it 'compiles basic project', ->
     p = path.join(@public, 'index.html')

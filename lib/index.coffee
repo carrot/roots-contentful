@@ -81,13 +81,19 @@ module.exports = (opts) ->
     if _.has(e.fields, 'sys') then return W.reject(errors.sys_conflict)
     _.assign(_.omit(e, 'fields'), e.fields)
 
-  # load content
-  promise = configure_content(opts.content_types)
-    .then(get_all_content)
+  content = []
 
   class RootsContentful
     constructor: (@roots) ->
       @roots.config.locals ||= {}
+
+    setup: ->
+      if content.length
+        configure_content(opts.content_types)
+        .then(get_all_content)
+        .then (res) -> content = res
+      else
+        W.resolve()
 
     compile_hooks: ->
       before_pass: (ctx) =>
