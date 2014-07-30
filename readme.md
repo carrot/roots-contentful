@@ -1,9 +1,9 @@
 Roots Contentful
 ================
 
-[![npm](https://badge.fury.io/js/roots-contentful.png)](http://badge.fury.io/js/roots-contentful) [![tests](https://travis-ci.org/carrot/roots-contentful.png?branch=master)](https://travis-ci.org/carrot/roots-contentful) [![dependencies](https://david-dm.org/carrot/roots-contentful.png?theme=shields.io)](https://david-dm.org/carrot/roots-contentful) [![Coverage Status](https://img.shields.io/coveralls/carrot/roots-contentful.svg)](https://coveralls.io/r/carrot/roots-contentful?branch=implement-view-helper)
+[![npm](https://badge.fury.io/js/roots-contentful.png)](http://badge.fury.io/js/roots-contentful) [![tests](https://travis-ci.org/carrot/roots-contentful.png?branch=master)](https://travis-ci.org/carrot/roots-contentful) [![dependencies](https://david-dm.org/carrot/roots-contentful.png?theme=shields.io)](https://david-dm.org/carrot/roots-contentful) [![Coverage Status](https://img.shields.io/coveralls/carrot/roots-contentful.svg)](https://coveralls.io/r/carrot/roots-contentful?branch=master)
 
-An extension for using roots with the Contentful CMS API.
+An extension for using [roots](https://github.com/jenius/roots) with the Contentful CMS API.
 
 > **Note:** This project is in early development, and versioning is a little different. [Read this](http://markup.im/#q4_cRZ1Q) for more details.
 
@@ -66,28 +66,13 @@ A `contentful` view helper object will be passed into every view containing your
 
 #### Single Entry Views
 
+> **Note:** This feature is currently not implemented, but is planned for a future release.
+
 If a `template` option is defined for a Content Type in `app.coffee`, roots will compile a single page view for each entry in that Content Type collection. The entry will also have a `_url` key that returns the path to the single page view (so you can create links on an index page for example).
 
 #### The Entry Object
 
-Contentful's [documentation](https://www.contentful.com/developers/documentation/content-delivery-api/#getting-entry) shows the response the API returns when fetching an entry. It looks something like this:
-
-```json
-{
-  "sys": {
-    "type": "Entry",
-    "id": "cat"
-    # ...
-  },
-  "fields": {
-    "title": "Wow. Such title. Much viral",
-    "author": "The Doge of Venice"
-    # ...
-  }
-}
-```
-
-As a convenience, the entry object roots-contentful makes available in your views will have the `fields` key's value set one level higher on the object. System metadata remains accessible on the `sys` key and roots-contentful will raise an error if you have a field named `sys`. Thus, the entry object above will have this structure inside your views:
+Contentful's [documentation](https://www.contentful.com/developers/documentation/content-delivery-api/#getting-entry) shows the API response when fetching an entry. Your content fields are nested in a `fields` key. As a convenience, the entry object roots-contentful makes available in your views will have the `fields` key's value set one level higher on the object. System metadata remains accessible on the `sys` key and roots-contentful will raise an error if you have a field named `sys`. Inside your views, the entry object  will have this structure:
 
 ```json
 {
@@ -125,7 +110,7 @@ Required. The Content Type's ID on Contentful.
 
 #### name
 
-Optional. This is the name of the key the entries will be attached to on the `contentful` object in your views. Defaults to a [pluralized](https://github.com/blakeembrey/pluralize), [underscored](http://stringjs.com/#methods/underscore) representation of the Content Type name (e.g. 'Blog Post' => `contentful.blogPosts`)
+Optional. This is the name of the key the entries will be attached to on the `contentful` object in your views. Defaults to a [pluralized](https://github.com/blakeembrey/pluralize), [underscored](http://stringjs.com/#methods/underscore) representation of the Content Type name (e.g. 'Blog Post' => `contentful.blog_posts`)
 
 #### template
 

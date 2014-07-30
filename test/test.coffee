@@ -1,8 +1,6 @@
 _          = require 'lodash'
 path       = require 'path'
-fs         = require 'fs'
 W          = require 'when'
-node       = require 'when/node'
 Roots      = require 'roots'
 
 # setup, teardown, and utils

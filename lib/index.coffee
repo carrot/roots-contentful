@@ -29,8 +29,7 @@ module.exports = (opts) ->
     setup: ->
       configure_content(opts.content_types)
         .then(get_all_content)
-        .then (res) =>
-          @roots.config.locals.contentful = res
+        .then (res) => @roots.config.locals.contentful = res
 
     ###*
      * Configures content types set in app.coffee. Sets default values if
@@ -78,8 +77,7 @@ module.exports = (opts) ->
      * @return {Promise} - returns formatted content type entries object
     ###
 
-    format_content = (content) ->
-      W.map(content, format_entry)
+    format_content = (content) -> W.map(content, format_entry)
 
     ###*
      * Formats a single entry object from Contentful API response
