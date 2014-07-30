@@ -1,7 +1,7 @@
 Roots Contentful
 ================
 
-[![npm](https://badge.fury.io/js/roots-contentful.png)](http://badge.fury.io/js/roots-contentful) [![tests](https://travis-ci.org/carrot/roots-contentful.png?branch=master)](https://travis-ci.org/carrot/roots-contentful) [![dependencies](https://david-dm.org/carrot/roots-contentful.png?theme=shields.io)](https://david-dm.org/carrot/roots-contentful)
+[![npm](https://badge.fury.io/js/roots-contentful.png)](http://badge.fury.io/js/roots-contentful) [![tests](https://travis-ci.org/carrot/roots-contentful.png?branch=master)](https://travis-ci.org/carrot/roots-contentful) [![dependencies](https://david-dm.org/carrot/roots-contentful.png?theme=shields.io)](https://david-dm.org/carrot/roots-contentful) [![Coverage Status](https://img.shields.io/coveralls/carrot/roots-contentful.svg)](https://coveralls.io/r/carrot/roots-contentful?branch=implement-view-helper)
 
 An extension for using roots with the Contentful CMS API.
 
@@ -34,7 +34,7 @@ module.exports =
           id: 'xxxxxx',
           name: 'posts',
           template: 'views/_post.jade',
-          filter: {
+          filters: {
             'fields.environment[in]': ['staging', 'production']
           },
           path: (e) -> "blogging/#{e.category}/#{slugify(e.title)}"
@@ -125,13 +125,13 @@ Required. The Content Type's ID on Contentful.
 
 #### name
 
-Optional. This is the name of the key the entries will be attached to on the `contentful` object in your views. Defaults to a [pluralized](https://github.com/blakeembrey/pluralize), [camelized](http://stringjs.com/#methods/camelize) representation of the Content Type name (e.g. 'Blog Post' => `contentful.blogPosts`)
+Optional. This is the name of the key the entries will be attached to on the `contentful` object in your views. Defaults to a [pluralized](https://github.com/blakeembrey/pluralize), [underscored](http://stringjs.com/#methods/underscore) representation of the Content Type name (e.g. 'Blog Post' => `contentful.blogPosts`)
 
 #### template
 
 Optional. Path relative to the roots project of a template for a single entry view. Each entry in the Content Type will be passed into the template in an `entry` variable. If not given, the Content Type will not be compiled into single entry views and will only be attached to the `contentful` view helper object.
 
-#### filter
+#### filters
 
 Optional. Takes an object with different filter criteria, see examples of how to structure the object in [Contentful's docs](https://www.contentful.com/developers/documentation/content-delivery-api/javascript/#search-filter).
 

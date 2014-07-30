@@ -9,7 +9,8 @@ module.exports =
       content_types: [
         {
           id: '6BYT1gNiIEyIw8Og8aQAO6'
-        }
+          name: 'press_links'
+        },
         {
           id: '7CDlVsacqQc88cmIEGYWMa'
         }

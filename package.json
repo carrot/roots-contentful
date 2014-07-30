@@ -7,21 +7,30 @@
     "test": "test"
   },
   "dependencies": {
-    "lodash": "2.x",
-    "minimatch": "0.2.x",
-    "roots-util": "0.0.4"
+    "lodash": "~2.4.1",
+    "roots-util": "~0.0.5",
+    "contentful": "~0.1.2",
+    "when": "~3.4.2",
+    "string": "~1.9.0",
+    "pluralize": "0.0.10"
   },
   "devDependencies": {
+    "chai": "1.x",
+    "chai-as-promised": "4.x",
     "coffee-script": "1.7.x",
-    "mocha": "*",
-    "should": "*",
-    "roots": "3.x"
+    "coveralls": "2.x",
+    "istanbul": "0.3.x",
+    "mocha": "1.x",
+    "roots": "3.x",
+    "mockery": "~1.4.0"
   },
   "peerDependencies": {
     "roots": "3.x"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "coverage": "make build; NODE_ENV=test istanbul cover ./node_modules/mocha/bin/_mocha; make unbuild; open coverage/lcov-report/index.html;",
+    "coveralls": "make build; make coveralls; make unbuild;"
   },
   "repository": {
     "type": "git",
