@@ -108,5 +108,6 @@ module.exports = (opts) ->
     compile_entries = (type, content) ->
       if not type.template then return W.resolve()
       W.map content, (entry) =>
-        jade.renderFile(path.join(@roots.root, type.template), {entry: entry})
+        locals = _.merge(@roots.config.locals, entry: entry)
+        jade.renderFile(path.join(@roots.root, type.template), locals)
           .then((res) => @util.write("#{type.path(entry)}.html", res))

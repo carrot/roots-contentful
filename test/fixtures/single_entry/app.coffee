@@ -16,3 +16,6 @@ module.exports =
       ]
     )
   ]
+
+  locals:
+    wow: 'such local'

@@ -107,4 +107,8 @@ describe 'single entry views', ->
     h.file.contains(p, @title).should.be.true
     h.file.contains(p, @body).should.be.true
 
+  it 'has access to other roots locals', ->
+    p = path.join(@public, "blog_posts/#{S(@title).slugify().s}.html")
+    h.file.contains(p, 'such local').should.be.true
+
   after -> unmock_contentful()
