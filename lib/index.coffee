@@ -30,11 +30,13 @@ module.exports = (opts) ->
     constructor: (@roots) ->
       @util = new RootsUtil(@roots)
       @roots.config.locals ?= {}
+      @roots.config.locals.contentful ?= {}
 
     setup: ->
-      configure_content(opts.content_types)
-        .then(get_all_content.bind(@))
-        .then (res) => @roots.config.locals.contentful = res
+      configure_content(opts.content_types).with(@)
+        .then(get_all_content)
+        .tap(set_locals)
+        .tap(compile_entries)
 
     ###*
      * Configures content types set in app.coffee. Sets default values if
@@ -63,13 +65,11 @@ module.exports = (opts) ->
     ###
 
     get_all_content = (types) ->
-      W.reduce types, (m, t) =>
+      W.map types, (t) =>
         fetch_content(t)
           .then(format_content)
-          .tap((c) => compile_entries.bind(@)(t, c))
-          .then((c) -> m[t.name] = c)
-          .yield(m)
-      , {}
+          .then((c) -> t.content = c)
+          .yield(t)
 
     ###*
      * Fetch entries for a single content type object
@@ -99,15 +99,25 @@ module.exports = (opts) ->
       _.assign(_.omit(e, 'fields'), e.fields)
 
     ###*
-     * Compiles single entry views if a template is given for the content type
-     * @param {Object} type - Type configuration object
-     * @param {Array} content - Formatted entries for the type from Contentful
+     * Builds locals object from types objects with content
+     * @param {Array} types - populated content type objects
+     * @return {Promise} - promise for when complete
+    ###
+
+    set_locals = (types) ->
+      W.map types, (t) => @roots.config.locals.contentful[t.name] = t.content
+
+    ###*
+     * Compiles single entry views for content types
+     * @param {Array} types - Populated content type objects
      * @return {Promise} - promise for when compilation is finished
     ###
 
-    compile_entries = (type, content) ->
-      if not type.template then return W.resolve()
-      W.map content, (entry) =>
-        locals = _.merge(@roots.config.locals, entry: entry)
-        jade.renderFile(path.join(@roots.root, type.template), locals)
-          .then((res) => @util.write("#{type.path(entry)}.html", res))
+    compile_entries = (types) ->
+      W.map types, (t) =>
+        if not t.template then return W.resolve()
+        W.map t.content, (entry) =>
+          locals = _.merge(@roots.config.locals, entry: entry)
+          jade.renderFile(path.join(@roots.root, t.template), locals)
+            .then((res) => @util.write("#{t.path(entry)}.html", res))
+
