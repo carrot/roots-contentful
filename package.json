@@ -8,11 +8,13 @@
   },
   "dependencies": {
     "lodash": "~2.4.1",
-    "roots-util": "~0.0.5",
+    "roots-util": "0.0.5",
     "contentful": "~0.1.2",
     "when": "~3.4.2",
     "string": "~1.9.0",
-    "pluralize": "0.0.10"
+    "pluralize": "0.0.10",
+    "accord": "~0.11.1",
+    "jade": "~1.5.0"
   },
   "devDependencies": {
     "chai": "1.x",

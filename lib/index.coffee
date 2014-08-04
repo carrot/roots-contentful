@@ -1,8 +1,12 @@
 _          = require 'lodash'
 W          = require 'when'
 S          = require 'string'
+path       = require 'path'
 contentful = require 'contentful'
 pluralize  = require 'pluralize'
+RootsUtil  = require 'roots-util'
+accord     = require 'accord'
+jade       = accord.load('jade')
 
 errors =
   no_token: 'Missing required options for roots-contentful. Please ensure
@@ -24,11 +28,12 @@ module.exports = (opts) ->
 
   class RootsContentful
     constructor: (@roots) ->
-      @roots.config.locals ||= {}
+      @util = new RootsUtil(@roots)
+      @roots.config.locals ?= {}
 
     setup: ->
       configure_content(opts.content_types)
-        .then(get_all_content)
+        .then(get_all_content.bind(@))
         .then (res) => @roots.config.locals.contentful = res
 
     ###*
@@ -41,11 +46,14 @@ module.exports = (opts) ->
     configure_content = (types) ->
       W.map types, (t) ->
         if not t.id then return W.reject(errors.no_type_id)
-        if t.name then return W.resolve(t)
         t.filters ?= {}
-        W client.contentType(t.id).then (res) ->
-          t.name = pluralize(S(res.name).toLowerCase().underscore().s)
-          return t
+        if (not t.name || (t.template && not t.path))
+          return W client.contentType(t.id).then (res) ->
+            t.name ?= pluralize(S(res.name).toLowerCase().underscore().s)
+            if t.template
+              t.path ?= (e) -> "#{t.name}/#{S(e[res.displayField]).slugify().s}"
+            return t
+        return W.resolve(t)
 
     ###*
      * Fetches data from Contentful API, formats the raw data, and constructs
@@ -55,9 +63,10 @@ module.exports = (opts) ->
     ###
 
     get_all_content = (types) ->
-      W.reduce types, (m, t) ->
+      W.reduce types, (m, t) =>
         fetch_content(t)
           .then(format_content)
+          .tap((c) => compile_entries.bind(@)(t, c))
           .then((c) -> m[t.name] = c)
           .yield(m)
       , {}
@@ -88,3 +97,16 @@ module.exports = (opts) ->
     format_entry = (e) ->
       if _.has(e.fields, 'sys') then return W.reject(errors.sys_conflict)
       _.assign(_.omit(e, 'fields'), e.fields)
+
+    ###*
+     * Compiles single entry views if a template is given for the content type
+     * @param {Object} type - Type configuration object
+     * @param {Array} content - Formatted entries for the type from Contentful
+     * @return {Promise} - promise for when compilation is finished
+    ###
+
+    compile_entries = (type, content) ->
+      if not type.template then return W.resolve()
+      W.map content, (entry) =>
+        jade.renderFile(path.join(@roots.root, type.template), {entry: entry})
+          .then((res) => @util.write("#{type.path(entry)}.html", res))
