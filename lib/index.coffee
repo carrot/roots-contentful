@@ -5,8 +5,6 @@ path       = require 'path'
 contentful = require 'contentful'
 pluralize  = require 'pluralize'
 RootsUtil  = require 'roots-util'
-accord     = require 'accord'
-jade       = accord.load('jade')
 
 errors =
   no_token: 'Missing required options for roots-contentful. Please ensure
@@ -58,8 +56,7 @@ module.exports = (opts) ->
         return W.resolve(t)
 
     ###*
-     * Fetches data from Contentful API, formats the raw data, and constructs
-     * the locals object
+     * Fetches data from Contentful for content types, and formats the raw data
      * @param {Array} types - configured content_type objects
      * @return {Promise} - returns formatted locals object with all content
     ###
@@ -117,7 +114,9 @@ module.exports = (opts) ->
       W.map types, (t) =>
         if not t.template then return W.resolve()
         W.map t.content, (entry) =>
-          locals = _.merge(@roots.config.locals, entry: entry)
-          jade.renderFile(path.join(@roots.root, t.template), locals)
+          template = path.join(@roots.root, t.template)
+          locals   = _.merge(@roots.config.locals, entry: entry)
+          compiler = _.find @roots.config.compilers, (c) ->
+            _.contains(c.extensions, path.extname(template).substring(1))
+          compiler.renderFile(template, locals)
             .then((res) => @util.write("#{t.path(entry)}.html", res))
-

@@ -12,9 +12,7 @@
     "contentful": "~0.1.2",
     "when": "~3.4.2",
     "string": "~1.9.0",
-    "pluralize": "0.0.10",
-    "accord": "~0.11.1",
-    "jade": "~1.5.0"
+    "pluralize": "0.0.10"
   },
   "devDependencies": {
     "chai": "1.x",
