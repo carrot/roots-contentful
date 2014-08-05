@@ -66,8 +66,6 @@ A `contentful` view helper object will be passed into every view containing your
 
 #### Single Entry Views
 
-> **Note:** This feature is currently not implemented, but is planned for a future release.
-
 If a `template` option is defined for a Content Type in `app.coffee`, roots will compile a single page view for each entry in that Content Type collection. The entry will also have a `_url` key that returns the path to the single page view (so you can create links on an index page for example).
 
 #### The Entry Object

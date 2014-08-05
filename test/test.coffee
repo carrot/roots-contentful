@@ -93,22 +93,42 @@ describe 'custom name for view helper local', ->
   after -> unmock_contentful()
 
 describe 'single entry views', ->
-  before (done) ->
-    @title = 'Real Talk'
-    @body  = 'I\'m not about to sit up here, and argue about who\'s to blame.'
-    mock_contentful
-      entry: {fields: {title: @title, body: @body}},
-      content_type: {name: 'Blog Post', displayField: 'title'}
-    compile_fixture.call(@, 'single_entry').then(-> done()).catch(done)
+  describe 'default path function', ->
+    before (done) ->
+      @title = 'Real Talk'
+      @body  = 'I\'m not about to sit up here, and argue about who\'s to blame.'
+      mock_contentful
+        entry: {fields: {title: @title, body: @body}},
+        content_type: {name: 'Blog Post', displayField: 'title'}
+      compile_fixture.call(@, 'single_entry').then(-> done()).catch(done)
 
-  it 'compiles a single entry file based off the slugified display field', ->
-    p = path.join(@public, "blog_posts/#{S(@title).slugify().s}.html")
-    h.file.exists(p).should.be.ok
-    h.file.contains(p, @title).should.be.true
-    h.file.contains(p, @body).should.be.true
+    it 'compiles a single entry file based off the slugified display field', ->
+      p = path.join(@public, "blog_posts/#{S(@title).slugify().s}.html")
+      h.file.exists(p).should.be.ok
+      h.file.contains(p, @title).should.be.true
+      h.file.contains(p, @body).should.be.true
 
-  it 'has access to other roots locals', ->
-    p = path.join(@public, "blog_posts/#{S(@title).slugify().s}.html")
-    h.file.contains(p, 'such local').should.be.true
+    it 'has access to other roots locals inside the single entry view', ->
+      p = path.join(@public, "blog_posts/#{S(@title).slugify().s}.html")
+      h.file.contains(p, 'such local').should.be.true
 
-  after -> unmock_contentful()
+    after -> unmock_contentful()
+
+  describe 'custom path function', ->
+    before (done) ->
+      @title = 'Real Talk'
+      @body  = 'I\'m not about to sit up here, and argue about who\'s to blame.'
+      @category = 'greatest_hits'
+      mock_contentful
+        entry: {fields: {title: @title, body: @body, category: @category}},
+        content_type: {name: 'Blog Post', displayField: 'title'}
+      compile_fixture.call(@, 'single_entry_custom').then(-> done()).catch(done)
+
+    it 'compiles a single entry file using custom path', ->
+      output = "blogging/#{@category}/#{S(@title).slugify().s}.html"
+      p = path.join(@public, output)
+      h.file.exists(p).should.be.ok
+      h.file.contains(p, @title).should.be.true
+      h.file.contains(p, @body).should.be.true
+
+    after -> unmock_contentful()

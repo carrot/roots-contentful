@@ -12,9 +12,9 @@ errors =
   no_token: 'Missing required options for roots-contentful. Please ensure
   `access_token` and `space_id` are present.'
   no_type_id: 'One or more of your content types is missing an `id` value'
-  sys_conflict:'One of your content types has `sys` as a field. This is reserved
-   for storing Contentful system metadata, please rename this field to a
-   different value.'
+  sys_conflict: 'One of your content types has `sys` as a field. This is
+  reserved for storing Contentful system metadata, please rename this field to
+  a different value.'
 
 module.exports = (opts) ->
   # throw error if missing required config
