@@ -33,6 +33,7 @@ module.exports = (opts) ->
     setup: ->
       configure_content(opts.content_types).with(@)
         .then(get_all_content)
+        .tap(set_urls)
         .tap(set_locals)
         .tap(compile_entries)
 
@@ -94,6 +95,17 @@ module.exports = (opts) ->
     format_entry = (e) ->
       if _.has(e.fields, 'sys') then return W.reject(errors.sys_conflict)
       _.assign(_.omit(e, 'fields'), e.fields)
+
+    ###*
+     * Sets `_url` property on content with single entry views
+     * @param {Array} types - content type objects
+     * return {Promise} - promise when urls are set
+    ###
+
+    set_urls = (types) ->
+      W.map types, (t) ->
+        if t.template then W.map t.content, (entry) ->
+          entry._url = "/#{t.path(entry)}.html"
 
     ###*
      * Builds locals object from types objects with content

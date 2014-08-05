@@ -112,6 +112,10 @@ describe 'single entry views', ->
       p = path.join(@public, "blog_posts/#{S(@title).slugify().s}.html")
       h.file.contains(p, 'such local').should.be.true
 
+    it 'sets a _url attribute to allow links to each entry', ->
+      p = path.join(@public, 'index.html')
+      h.file.contains(p, '/blog_posts/real-talk.html').should.be.true
+
     after -> unmock_contentful()
 
   describe 'custom path function', ->
