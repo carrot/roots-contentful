@@ -1,6 +1,6 @@
 {
   "name": "roots-contentful",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "An extension for using roots with the API-driven Contentful CMS",
   "main": "lib",
   "directories": {
