@@ -1,16 +1,18 @@
 _          = require 'lodash'
 W          = require 'when'
 S          = require 'string'
+path       = require 'path'
 contentful = require 'contentful'
 pluralize  = require 'pluralize'
+RootsUtil  = require 'roots-util'
 
 errors =
   no_token: 'Missing required options for roots-contentful. Please ensure
   `access_token` and `space_id` are present.'
   no_type_id: 'One or more of your content types is missing an `id` value'
-  sys_conflict:'One of your content types has `sys` as a field. This is reserved
-   for storing Contentful system metadata, please rename this field to a
-   different value.'
+  sys_conflict: 'One of your content types has `sys` as a field. This is
+  reserved for storing Contentful system metadata, please rename this field to
+  a different value.'
 
 module.exports = (opts) ->
   # throw error if missing required config
@@ -24,12 +26,16 @@ module.exports = (opts) ->
 
   class RootsContentful
     constructor: (@roots) ->
-      @roots.config.locals ||= {}
+      @util = new RootsUtil(@roots)
+      @roots.config.locals ?= {}
+      @roots.config.locals.contentful ?= {}
 
     setup: ->
-      configure_content(opts.content_types)
+      configure_content(opts.content_types).with(@)
         .then(get_all_content)
-        .then (res) => @roots.config.locals.contentful = res
+        .tap(set_urls)
+        .tap(set_locals)
+        .tap(compile_entries)
 
     ###*
      * Configures content types set in app.coffee. Sets default values if
@@ -41,26 +47,27 @@ module.exports = (opts) ->
     configure_content = (types) ->
       W.map types, (t) ->
         if not t.id then return W.reject(errors.no_type_id)
-        if t.name then return W.resolve(t)
         t.filters ?= {}
-        W client.contentType(t.id).then (res) ->
-          t.name = pluralize(S(res.name).toLowerCase().underscore().s)
-          return t
+        if (not t.name || (t.template && not t.path))
+          return W client.contentType(t.id).then (res) ->
+            t.name ?= pluralize(S(res.name).toLowerCase().underscore().s)
+            if t.template
+              t.path ?= (e) -> "#{t.name}/#{S(e[res.displayField]).slugify().s}"
+            return t
+        return W.resolve(t)
 
     ###*
-     * Fetches data from Contentful API, formats the raw data, and constructs
-     * the locals object
+     * Fetches data from Contentful for content types, and formats the raw data
      * @param {Array} types - configured content_type objects
      * @return {Promise} - returns formatted locals object with all content
     ###
 
     get_all_content = (types) ->
-      W.reduce types, (m, t) ->
+      W.map types, (t) =>
         fetch_content(t)
           .then(format_content)
-          .then((c) -> m[t.name] = c)
-          .yield(m)
-      , {}
+          .then((c) -> t.content = c)
+          .yield(t)
 
     ###*
      * Fetch entries for a single content type object
@@ -88,3 +95,40 @@ module.exports = (opts) ->
     format_entry = (e) ->
       if _.has(e.fields, 'sys') then return W.reject(errors.sys_conflict)
       _.assign(_.omit(e, 'fields'), e.fields)
+
+    ###*
+     * Sets `_url` property on content with single entry views
+     * @param {Array} types - content type objects
+     * return {Promise} - promise when urls are set
+    ###
+
+    set_urls = (types) ->
+      W.map types, (t) ->
+        if t.template then W.map t.content, (entry) ->
+          entry._url = "/#{t.path(entry)}.html"
+
+    ###*
+     * Builds locals object from types objects with content
+     * @param {Array} types - populated content type objects
+     * @return {Promise} - promise for when complete
+    ###
+
+    set_locals = (types) ->
+      W.map types, (t) => @roots.config.locals.contentful[t.name] = t.content
+
+    ###*
+     * Compiles single entry views for content types
+     * @param {Array} types - Populated content type objects
+     * @return {Promise} - promise for when compilation is finished
+    ###
+
+    compile_entries = (types) ->
+      W.map types, (t) =>
+        if not t.template then return W.resolve()
+        W.map t.content, (entry) =>
+          template = path.join(@roots.root, t.template)
+          locals   = _.merge(@roots.config.locals, entry: entry)
+          compiler = _.find @roots.config.compilers, (c) ->
+            _.contains(c.extensions, path.extname(template).substring(1))
+          compiler.renderFile(template, locals)
+            .then((res) => @util.write("#{t.path(entry)}.html", res))
