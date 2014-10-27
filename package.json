@@ -24,9 +24,6 @@
     "roots": "3.x",
     "mockery": "~1.4.0"
   },
-  "peerDependencies": {
-    "roots": "3.x"
-  },
   "scripts": {
     "test": "mocha",
     "coverage": "make build; NODE_ENV=test istanbul cover ./node_modules/mocha/bin/_mocha; make unbuild; open coverage/lcov-report/index.html;",
