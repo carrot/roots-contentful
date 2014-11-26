@@ -1,17 +1,17 @@
 {
   "name": "roots-contentful",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "An extension for using roots with the API-driven Contentful CMS",
   "main": "lib",
   "directories": {
     "test": "test"
   },
   "dependencies": {
-    "lodash": "~2.4.1",
+    "lodash": "2.4.x",
     "roots-util": "0.1.x",
-    "contentful": "~0.1.2",
-    "when": "~3.4.2",
-    "string": "~1.9.0",
+    "contentful": "0.1.x",
+    "when": "3.4.x",
+    "string": "~1.9.x",
     "pluralize": "0.0.10"
   },
   "devDependencies": {
@@ -22,7 +22,7 @@
     "istanbul": "0.3.x",
     "mocha": "1.x",
     "roots": "3.0.0-rc.10",
-    "mockery": "~1.4.0"
+    "mockery": "1.4.x"
   },
   "scripts": {
     "test": "mocha",
