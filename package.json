@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "lodash": "~2.4.1",
-    "roots-util": "0.0.5",
+    "roots-util": "0.1.x",
     "contentful": "~0.1.2",
     "when": "~3.4.2",
     "string": "~1.9.0",
@@ -21,7 +21,7 @@
     "coveralls": "2.x",
     "istanbul": "0.3.x",
     "mocha": "1.x",
-    "roots": "3.x",
+    "roots": "3.0.0-rc.10",
     "mockery": "~1.4.0"
   },
   "scripts": {
