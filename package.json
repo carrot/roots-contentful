@@ -21,7 +21,7 @@
     "coveralls": "2.x",
     "istanbul": "0.3.x",
     "mocha": "1.x",
-    "roots": "3.0.0-rc.10",
+    "roots": "3.0.0-rc.11",
     "mockery": "1.4.x"
   },
   "scripts": {
