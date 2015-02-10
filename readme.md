@@ -26,24 +26,17 @@ contentful = require 'roots-contentful'
 
 module.exports =
   extensions: [
-    contentful({
+    contentful
       access_token: 'YOUR_ACCESS_TOKEN'
       space_id: 'xxxxxx'
-      content_types: [
-        {
-          id: 'xxxxxx',
-          name: 'posts',
-          template: 'views/_post.jade',
-          filters: {
-            'fields.environment[in]': ['staging', 'production']
-          },
-          path: (e) -> "blogging/#{e.category}/#{slugify(e.title)}"
-        },
-        {
+      content_types:
+        blog_posts:
           id: 'xxxxxx'
-        }
-      ]
-    })
+          template: 'views/_post.jade'
+          filters: { 'fields.environment[in]': ['staging', 'production'] }
+          path: (e) -> "blogging/#{e.category}/#{slugify(e.title)}"
+        press_links:
+          id: 'xxxxxx'
   ]
 
 # ...
@@ -97,7 +90,9 @@ Required. The space ID containing the content you wish to retrieve.
 
 #### content_types
 
-An array of objects specifying from which Content Types you wish to fetch entries.
+An object whose key-value pairs correspond to a Contentful Content Types. Each
+content type's entries will be set on the `contentful` locals object using
+the key used in the config.
 
 ### Configuring a `content_type`  
 Each object in the content_types array can have the following properties:
