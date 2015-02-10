@@ -43,13 +43,25 @@ after -> h.project.remove_folders('**/public')
 # tests
 
 describe 'config', ->
-  before -> mock_contentful()
+  before ->
+    @title = 'Gatorade'
+    @body  = 'Yung Lean'
+    mock_contentful(entries: [{fields: {title: @title, body: @body}}])
 
   it 'should throw an error when missing an access token', ->
     (-> compile_fixture.call(@, 'missing_token')).should.throw()
 
   it 'should throw an error without content type id', ->
     compile_fixture.call(@, 'missing_config').should.be.rejected
+
+  it 'allows the content type name to be set through a k/v object config', (done) ->
+    compile_fixture.call(@, 'alt-content-type-config')
+      .with(@)
+      .then ->
+        p = path.join(@public, 'index.html')
+        h.file.contains(p, @title).should.be.true
+        h.file.contains(p, @body).should.be.true
+      .then(-> done()).catch(done)
 
   after -> unmock_contentful()
 

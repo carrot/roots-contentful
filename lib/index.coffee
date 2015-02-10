@@ -45,6 +45,7 @@ module.exports = (opts) ->
     ###
 
     configure_content = (types) ->
+      if _.isPlainObject(types) then types = reconfigure_alt_type_config(types)
       W.map types, (t) ->
         if not t.id then return W.reject(errors.no_type_id)
         t.filters ?= {}
@@ -55,6 +56,20 @@ module.exports = (opts) ->
               t.path ?= (e) -> "#{t.name}/#{S(e[res.displayField]).slugify().s}"
             return t
         return W.resolve(t)
+
+    ###*
+     * Reconfigures content types set in app.coffee using an object instead of
+     * an array. The keys of the object set as the `name` option in the config
+     * @param {Object} types - content_types set in app.coffee extension config
+     * @return {Promise} - returns an array of content types
+    ###
+
+    reconfigure_alt_type_config = (types) ->
+      _.reduce types, (res, type, k) ->
+        type.name = k
+        res.push(type)
+        res
+      , []
 
     ###*
      * Fetches data from Contentful for content types, and formats the raw data
