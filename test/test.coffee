@@ -16,20 +16,23 @@ mock_contentful = (opts = {}) ->
     useCleanCache: true
 
   opts = _.defaults opts,
-    entry:
+    entries: [
       sys:
         sys: 'data'
       fields:
         title: 'Default Title'
         body: 'Default Body'
+    ]
     content_type:
       name: 'Blog Post'
       displayField: 'title'
 
+  if opts.entry then opts.entries = [opts.entry]
+
   mockery.registerMock 'contentful',
     createClient: ->
       contentType: -> W.resolve(opts.content_type)
-      entries: -> W.resolve [ opts.entry ]
+      entries: -> W.resolve(opts.entries)
 
 unmock_contentful = ->
   mockery.deregisterAll()
@@ -117,6 +120,27 @@ describe 'single entry views', ->
       h.file.contains(p, '/blog_posts/real-talk.html').should.be.true
 
     after -> unmock_contentful()
+
+  describe 'should clear entry locals between each single view compile', ->
+    before (done) ->
+      @title = 'Wow such doge'
+      @body  = 'such amaze'
+      @title_2 = 'Totes McGotes'
+      @body_2 = null
+
+      mock_contentful
+        entries: [
+          {fields: {title: @title, body: @body}},
+          {fields: {title: @title_2}}
+        ],
+        content_type: {name: 'Blog Post', displayField: 'title'}
+      compile_fixture.call(@, 'single_entry').then(-> done()).catch(done)
+
+    after -> unmock_contentful()
+
+    it 'should not have the first entry\'s content in the second entries single view', ->
+      p = path.join(@public, "blog_posts/#{S(@title_2).slugify().s}.html")
+      h.file.contains(p, @body).should.not.be.true
 
   describe 'custom path function', ->
     before (done) ->
