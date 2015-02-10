@@ -16,12 +16,13 @@ mock_contentful = (opts = {}) ->
     useCleanCache: true
 
   opts = _.defaults opts,
-    entry:
+    entries: [
       sys:
         sys: 'data'
       fields:
         title: 'Default Title'
         body: 'Default Body'
+    ]
     content_type:
       name: 'Blog Post'
       displayField: 'title'
@@ -29,7 +30,7 @@ mock_contentful = (opts = {}) ->
   mockery.registerMock 'contentful',
     createClient: ->
       contentType: -> W.resolve(opts.content_type)
-      entries: -> W.resolve [ opts.entry ]
+      entries: -> W.resolve(opts.entries)
 
 unmock_contentful = ->
   mockery.deregisterAll()
@@ -53,7 +54,7 @@ describe 'config', ->
   after -> unmock_contentful()
 
 describe 'contentful content type fields', ->
-  before -> mock_contentful(entry: {fields: {sys: 'test'}})
+  before -> mock_contentful(entries: [{fields: {sys: 'test'}}])
 
   it 'should throw an error if `sys` is a field name', ->
     compile_fixture.call(@, 'basic').should.be.rejected
@@ -64,7 +65,7 @@ describe 'basic compile', ->
   before (done) ->
     @title = 'Throw Some Ds'
     @body  = 'Rich Boy selling crick'
-    mock_contentful(entry: {fields: {title: @title, body: @body}})
+    mock_contentful(entries: [{fields: {title: @title, body: @body}}])
     compile_fixture.call(@, 'basic').then(-> done()).catch(done)
 
   it 'compiles basic project', ->
@@ -82,7 +83,7 @@ describe 'custom name for view helper local', ->
   before (done) ->
     @title = 'Throw Some Ds'
     @body  = 'Rich Boy selling crack'
-    mock_contentful(entry: {fields: {title: @title, body: @body}})
+    mock_contentful(entries: [{fields: {title: @title, body: @body}}])
     compile_fixture.call(@, 'custom_name').then(-> done()).catch(done)
 
   it 'has contentful data available in views under a custom name', ->
@@ -98,7 +99,7 @@ describe 'single entry views', ->
       @title = 'Real Talk'
       @body  = 'I\'m not about to sit up here, and argue about who\'s to blame.'
       mock_contentful
-        entry: {fields: {title: @title, body: @body}},
+        entries: [{fields: {title: @title, body: @body}}],
         content_type: {name: 'Blog Post', displayField: 'title'}
       compile_fixture.call(@, 'single_entry').then(-> done()).catch(done)
 
@@ -118,13 +119,34 @@ describe 'single entry views', ->
 
     after -> unmock_contentful()
 
+  describe 'should clear entry locals between each single view compile', ->
+    before (done) ->
+      @title = 'Wow such doge'
+      @body  = 'such amaze'
+      @title_2 = 'Totes McGotes'
+      @body_2 = null
+
+      mock_contentful
+        entries: [
+          {fields: {title: @title, body: @body}},
+          {fields: {title: @title_2}}
+        ],
+        content_type: {name: 'Blog Post', displayField: 'title'}
+      compile_fixture.call(@, 'single_entry').then(-> done()).catch(done)
+
+    after -> unmock_contentful()
+
+    it 'should not have the first entry\'s content in the second entries single view', ->
+      p = path.join(@public, "blog_posts/#{S(@title_2).slugify().s}.html")
+      h.file.contains(p, @body).should.not.be.true
+
   describe 'custom path function', ->
     before (done) ->
       @title = 'Real Talk'
       @body  = 'I\'m not about to sit up here, and argue about who\'s to blame.'
       @category = 'greatest_hits'
       mock_contentful
-        entry: {fields: {title: @title, body: @body, category: @category}},
+        entries: [{fields: {title: @title, body: @body, category: @category}}],
         content_type: {name: 'Blog Post', displayField: 'title'}
       compile_fixture.call(@, 'single_entry_custom').then(-> done()).catch(done)
 

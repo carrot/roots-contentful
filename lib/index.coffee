@@ -127,8 +127,8 @@ module.exports = (opts) ->
         if not t.template then return W.resolve()
         W.map t.content, (entry) =>
           template = path.join(@roots.root, t.template)
-          locals   = _.merge(@roots.config.locals, entry: entry)
+          @roots.config.locals.entry = entry
           compiler = _.find @roots.config.compilers, (c) ->
             _.contains(c.extensions, path.extname(template).substring(1))
-          compiler.renderFile(template, locals)
+          compiler.renderFile(template, @roots.config.locals)
             .then((res) => @util.write("#{t.path(entry)}.html", res.result))
