@@ -1,0 +1,4 @@
+ul
+  - for p in contentful.blog_posts
+    li
+      img(src!= asset(p.image, {w: 100, h: 100}))

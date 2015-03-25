@@ -170,3 +170,16 @@ describe 'single entry views', ->
       h.file.contains(p, @body).should.be.true
 
     after -> unmock_contentful()
+
+  describe 'image view helper function', ->
+    before (done) ->
+      @img_path = 'http://dogesay.com/wow.jpg'
+      mock_contentful
+        entries: [{fields: {image: fields: {file: {url: @img_path}}}}]
+      compile_fixture.call(@, 'image_view_helper').then(-> done()).catch(done)
+
+    it 'adds query string params to the image', ->
+      p = path.join(@public, 'index.html')
+      h.file.contains(p, "#{@img_path}?w=100&h=100").should.be.true
+
+    after -> unmock_contentful()
