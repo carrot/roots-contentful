@@ -158,8 +158,8 @@ module.exports = (opts) ->
      * @return {String} - URL string for the asset
     ###
 
-    asset_view_helper = (asset = {}, opts) ->
+    asset_view_helper = (asset = {}, params) ->
       asset.fields ?= {}
       asset.fields.file ?= {}
       url = asset.fields.file.url
-      if opts then "#{url}?#{querystring.stringify(opts)}" else url
+      if params then "#{url}?#{querystring.stringify(params)}" else url
