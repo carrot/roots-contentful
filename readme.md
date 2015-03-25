@@ -117,6 +117,16 @@ Optional. Takes an object with different filter criteria, see examples of how to
 
 Optional. Provide a function that returns a string of the relative path to the output file for a given entry without the extension. First argument passed into the function is the entry. Default is `<name>/<slug>` where `slug` is the [slugified](http://stringjs.com/#methods/slugify) output of the entry's `displayField` (a property of the Content Type), and `name` is the provided `name` option above or the default value. This option is ignored if no `template` is given.
 
+
+### Asset Image Helper
+
+roots-contentful also provides a convenient view helper called `asset` that allows you to pass in the asset object returned from their API and returns the url. You can also pass in options that will be appended to the image url as a a query string that allows you to specificy size and quality params as documented [here](https://www.contentful.com/developers/documentation/content-delivery-api/javascript/#image-asset-resizing).
+
+```jade
+- for post in contentful.posts
+  img(src!= asset(post.image, {w: 100, h: 100, q: 50}))
+```
+
 ### License & Contributing
 
 - Details on the license [can be found here](LICENSE.md)
