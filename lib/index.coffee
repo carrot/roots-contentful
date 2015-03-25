@@ -1,10 +1,11 @@
-_          = require 'lodash'
-W          = require 'when'
-S          = require 'string'
-path       = require 'path'
-contentful = require 'contentful'
-pluralize  = require 'pluralize'
-RootsUtil  = require 'roots-util'
+_           = require 'lodash'
+W           = require 'when'
+S           = require 'string'
+path        = require 'path'
+contentful  = require 'contentful'
+pluralize   = require 'pluralize'
+RootsUtil   = require 'roots-util'
+querystring = require 'querystring'
 
 errors =
   no_token: 'Missing required options for roots-contentful. Please ensure
@@ -157,8 +158,9 @@ module.exports = (opts) ->
      * @return {String} - URL string for the asset
     ###
 
-    asset_view_helper = (asset, opts) ->
-      if not asset.fields then return ''
+    asset_view_helper = (asset = {}, opts) ->
+      asset.fields ?= {}
+      asset.fields.file ?= {}
       url = asset.fields.file.url
       if opts then append_query_string(url, opts) else url
 
@@ -170,9 +172,4 @@ module.exports = (opts) ->
     ###
 
     append_query_string = (url, args = {}) ->
-      url += '?'
-      for k, v of args
-        url += "#{k}=#{v}&"
-      if url[url.length - 1] == '&'
-        url = url.substring(0, url.length - 1)
-      return url
+      "#{url}?#{querystring.stringify(args)}"
