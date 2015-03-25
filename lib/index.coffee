@@ -162,14 +162,4 @@ module.exports = (opts) ->
       asset.fields ?= {}
       asset.fields.file ?= {}
       url = asset.fields.file.url
-      if opts then append_query_string(url, opts) else url
-
-    ###*
-     * Appends query string params to a given URL string
-     * @param {String} url - URL string
-     * @param {Object} opts - Query string params to append
-     * @return {String} - resulting URL string
-    ###
-
-    append_query_string = (url, args = {}) ->
-      "#{url}?#{querystring.stringify(args)}"
+      if opts then "#{url}?#{querystring.stringify(opts)}" else url
