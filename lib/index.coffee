@@ -29,6 +29,7 @@ module.exports = (opts) ->
       @util = new RootsUtil(@roots)
       @roots.config.locals ?= {}
       @roots.config.locals.contentful ?= {}
+      @roots.config.locals.asset = asset_view_helper
 
     setup: ->
       configure_content(opts.content_types).with(@)
@@ -147,3 +148,31 @@ module.exports = (opts) ->
             _.contains(c.extensions, path.extname(template).substring(1))
           compiler.renderFile(template, @roots.config.locals)
             .then((res) => @util.write("#{t.path(entry)}.html", res.result))
+
+    ###*
+     * View helper for accessing the actual url from a Contentful asset
+     * and appends any query string params
+     * @param {Object} asset - Asset object returned from Contentful API
+     * @param {Object} opts - Query string params to append to the URL
+     * @return {String} - URL string for the asset
+    ###
+
+    asset_view_helper = (asset, opts) ->
+      if not asset.fields then return ''
+      url = asset.fields.file.url
+      if opts then append_query_string(url, opts) else url
+
+    ###*
+     * Appends query string params to a given URL string
+     * @param {String} url - URL string
+     * @param {Object} opts - Query string params to append
+     * @return {String} - resulting URL string
+    ###
+
+    append_query_string = (url, args = {}) ->
+      url += '?'
+      for k, v of args
+        url += "#{k}=#{v}&"
+      if url[url.length - 1] == '&'
+        url = url.substring(0, url.length - 1)
+      return url
