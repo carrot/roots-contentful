@@ -1,10 +1,11 @@
-_          = require 'lodash'
-W          = require 'when'
-S          = require 'string'
-path       = require 'path'
-contentful = require 'contentful'
-pluralize  = require 'pluralize'
-RootsUtil  = require 'roots-util'
+_           = require 'lodash'
+W           = require 'when'
+S           = require 'string'
+path        = require 'path'
+contentful  = require 'contentful'
+pluralize   = require 'pluralize'
+RootsUtil   = require 'roots-util'
+querystring = require 'querystring'
 
 errors =
   no_token: 'Missing required options for roots-contentful. Please ensure
@@ -29,6 +30,7 @@ module.exports = (opts) ->
       @util = new RootsUtil(@roots)
       @roots.config.locals ?= {}
       @roots.config.locals.contentful ?= {}
+      @roots.config.locals.asset = asset_view_helper
 
     setup: ->
       configure_content(opts.content_types).with(@)
@@ -147,3 +149,17 @@ module.exports = (opts) ->
             _.contains(c.extensions, path.extname(template).substring(1))
           compiler.renderFile(template, @roots.config.locals)
             .then((res) => @util.write("#{t.path(entry)}.html", res.result))
+
+    ###*
+     * View helper for accessing the actual url from a Contentful asset
+     * and appends any query string params
+     * @param {Object} asset - Asset object returned from Contentful API
+     * @param {Object} opts - Query string params to append to the URL
+     * @return {String} - URL string for the asset
+    ###
+
+    asset_view_helper = (asset = {}, params) ->
+      asset.fields ?= {}
+      asset.fields.file ?= {}
+      url = asset.fields.file.url
+      if params then "#{url}?#{querystring.stringify(params)}" else url
