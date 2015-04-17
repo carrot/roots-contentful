@@ -129,5 +129,5 @@ roots-contentful also provides a convenient view helper called `asset` that allo
 
 ### License & Contributing
 
-- Details on the license [can be found here](LICENSE.md)
+- Details on the license [can be found here](license.md)
 - Details on running tests and contributing [can be found here](contributing.md)
