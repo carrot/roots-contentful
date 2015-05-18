@@ -7,7 +7,7 @@
     "test": "test"
   },
   "dependencies": {
-    "lodash": "3.6.x",
+    "lodash": "3.8.x",
     "roots-util": "0.1.x",
     "contentful": "1.1.x",
     "when": "3.7.x",
@@ -16,11 +16,11 @@
   },
   "devDependencies": {
     "chai": "2.x",
-    "chai-as-promised": "4.x",
-    "coffee-script": "1.7.x",
+    "chai-as-promised": "5.0.x",
+    "coffee-script": "1.9.x",
     "coveralls": "2.x",
     "istanbul": "0.3.x",
-    "mocha": "1.x",
+    "mocha": "2.2.x",
     "roots": "3.0.x",
     "mockery": "1.4.x"
   },
