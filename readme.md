@@ -1,7 +1,8 @@
-Roots Contentful
-================
+# Roots Contentful
 
-[![npm](https://badge.fury.io/js/roots-contentful.png)](http://badge.fury.io/js/roots-contentful) [![tests](https://travis-ci.org/carrot/roots-contentful.png?branch=master)](https://travis-ci.org/carrot/roots-contentful) [![dependencies](https://david-dm.org/carrot/roots-contentful.png?theme=shields.io)](https://david-dm.org/carrot/roots-contentful) [![Coverage Status](https://img.shields.io/coveralls/carrot/roots-contentful.svg)](https://coveralls.io/r/carrot/roots-contentful?branch=master)
+[![npm](http://img.shields.io/npm/v/roots-contentful.svg?style=flat)](https://badge.fury.io/js/roots-contentful) [![tests](http://img.shields.io/travis/carrot/roots-contentful/master.svg?style=flat)](https://travis-ci.org/carrot/roots-contentful) [![dependencies](http://img.shields.io/gemnasium/carrot/roots-contentful.svg?style=flat)](https://gemnasium.com/carrot/roots-contentful)
+[![devDependencies](https://img.shields.io/david/dev/carrot/roots-contentful.svg)](https://gemnasium.com/carrot/roots-contentful)
+[![Coverage Status](https://img.shields.io/coveralls/carrot/roots-contentful.svg)](https://coveralls.io/r/carrot/roots-contentful?branch=master)
 
 An extension for using [roots](https://github.com/jenius/roots) with the Contentful CMS API.
 
