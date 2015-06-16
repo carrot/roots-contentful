@@ -64,10 +64,10 @@ If a `template` option is defined for a Content Type in `app.coffee`, roots will
 
 #### The Entry Object
 
-Contentful's [documentation](https://www.contentful.com/developers/documentation/content-delivery-api/#getting-entry) shows the API response when fetching an entry. Your content fields are nested in a `fields` key. As a convenience, the entry object roots-contentful makes available in your views will have the `fields` key's value set one level higher on the object. System metadata remains accessible on the `sys` key and roots-contentful will raise an error if you have a field named `sys`. Inside your views, the entry object  will have this structure:
+Contentful's [documentation](https://www.contentful.com/developers/documentation/content-delivery-api/#getting-entry) shows the API response when fetching an entry. Your content fields are nested in a `fields` key on the `entry` object. As a convenience, the entry object roots-contentful makes available in your views will have the `fields` key's value set one level higher on the object. System metadata remains accessible on the `sys` key and roots-contentful will raise an error if you have a field named `sys`. Inside your views, the entry object  will have this structure:
 
 ```json
-{
+"entry": {
   "title": "Wow. Such title. Much viral",
   "author": "The Doge of Venice"
   # ... the rest of the fields
@@ -77,6 +77,12 @@ Contentful's [documentation](https://www.contentful.com/developers/documentation
     # ...
   }
 }
+```
+And can be accessed in your view like this:
+
+```jade
+  h2= entry.title
+  p= markdown(entry.body)
 ```
 
 ### Configuration Options
