@@ -93,7 +93,11 @@ module.exports = (opts) ->
     ###
 
     fetch_content = (type) ->
-      W client.entries(_.merge(type.filters, content_type: type.id))
+      W(
+        client.entries(
+          _.merge(type.filters, content_type: type.id, include: 10)
+        )
+      )
 
     ###*
      * Formats raw response from Contentful
