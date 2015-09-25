@@ -58,6 +58,8 @@ A `contentful` view helper object will be passed into every view containing your
         p= markdown(post.body)
 ```
 
+Note: if you have [Links](https://www.contentful.com/developers/docs/concepts/links/) in your content more than 10 levels deep (the max for the `include` parameter), then unresolved links can be returned.
+
 #### Single Entry Views
 
 If a `template` option is defined for a Content Type in `app.coffee`, roots will compile a single page view for each entry in that Content Type collection. The entry will also have a `_url` key that returns the path to the single page view (so you can create links on an index page for example).
