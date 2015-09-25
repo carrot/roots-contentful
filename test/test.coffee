@@ -1,8 +1,8 @@
-_          = require 'lodash'
-S          = require 'string'
-path       = require 'path'
-W          = require 'when'
-Roots      = require 'roots'
+Roots = require 'roots'
+S = require 'string'
+W = require 'when'
+_ = require 'lodash'
+path = require 'path'
 
 # setup, teardown, and utils
 
