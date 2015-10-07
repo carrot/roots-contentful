@@ -15,14 +15,14 @@
     "when": "3.7.x"
   },
   "devDependencies": {
-    "chai": "2.x",
-    "chai-as-promised": "5.0.x",
-    "coffee-script": "1.9.x",
+    "chai": "3.3.0",
+    "chai-as-promised": "5.1.0",
+    "coffee-script": "1.10.0",
     "coveralls": "2.x",
     "istanbul": "0.3.x",
-    "mocha": "2.2.x",
+    "mocha": "2.3.3",
     "mockery": "1.4.x",
-    "roots": "3.0.x"
+    "roots": "3.1.0"
   },
   "directories": {
     "test": "test"
