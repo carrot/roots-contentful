@@ -183,17 +183,19 @@ describe 'single entry views', ->
 
     it 'compiles a single entry to multiple files', ->
       for lang in ['en', 'fr']
-        output = lang + "/#{S(@title).slugify().s}.html"
+        output = "/#{lang}/#{S(@title).slugify().s}.html"
         p = path.join(@public, output)
         h.file.exists(p).should.be.ok
         h.file.contains(p, @title).should.be.true
         h.file.contains(p, @body).should.be.true
-
-    it 'sets a _url attribute with an array of URLs to allow links to each of the entry\'s files', ->
-      output = "#{S(@title).slugify().s}.html"
-      p = path.join(@public, "en/#{output}")
+        h.file.contains(p, "<p>#{output}</p>").should.be.true
+        
+    it 'sets a _urls attribute with an array of paths to all of the entry\'s files', ->
+      filename = "#{S(@title).slugify().s}.html"
+      output = "/en/#{filename}"
+      p = path.join(@public, output)
       for lang in ['en', 'fr']
-        h.file.contains(p, "#{lang}/#{output}").should.be.true
+        h.file.contains(p, "<li>/#{lang}/#{filename}</li>").should.be.true
 
     after -> unmock_contentful()
 
