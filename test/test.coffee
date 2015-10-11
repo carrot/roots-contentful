@@ -183,7 +183,7 @@ describe 'single entry views', ->
 
     it 'compiles a single entry to multiple files', ->
       for lang in ['en', 'fr']
-        output = lang + "blogging/#{@category}/#{S(@title).slugify().s}.html"
+        output = lang + "/blogging/#{@category}/#{S(@title).slugify().s}.html"
         p = path.join(@public, output)
         h.file.exists(p).should.be.ok
         h.file.contains(p, @title).should.be.true

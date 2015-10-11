@@ -126,7 +126,11 @@ module.exports = (opts) ->
     set_urls = (types) ->
       W.map types, (t) ->
         if t.template then W.map t.content, (entry) ->
-          entry._url = "/#{t.path(entry)}.html"
+          paths = t.path(entry)
+          if Array.isArray(paths)
+            entry._url = ("/#{p}.html" for p in paths)
+          else
+            entry._url = "/#{paths}.html"
 
     ###*
      * Builds locals object from types objects with content
@@ -152,7 +156,13 @@ module.exports = (opts) ->
           compiler = _.find @roots.config.compilers, (c) ->
             _.contains(c.extensions, path.extname(template).substring(1))
           compiler.renderFile(template, @roots.config.locals)
-            .then((res) => @util.write("#{t.path(entry)}.html", res.result))
+            .then((res) =>
+              if Array.isArray entry._url
+                W.map entry._url, (url) =>
+                  @util.write(url, res.result)
+              else
+                @util.write(entry._url, res.result)
+            )
 
     ###*
      * View helper for accessing the actual url from a Contentful asset
