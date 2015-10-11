@@ -119,7 +119,7 @@ module.exports = (opts) ->
 
     ###*
      * Sets `_url` and `_urls` properties on content with single entry views
-     * `_url` is null if the custom path function returns multiple paths
+     * `_url` takes the value `null` if the content type's custom path function returns multiple paths
      * @param {Array} types - content type objects
      * return {Promise} - promise when urls are set
     ###
@@ -157,7 +157,10 @@ module.exports = (opts) ->
           W.map entry._urls, (url) =>
             @roots.config.locals.entry = _.assign({}, entry, { _url: url })
             compiler.renderFile(template, @roots.config.locals)
-              .then((res) => @util.write(url, res.result))
+              .then((res) =>
+                @roots.config.locals.entry = null
+                @util.write(url, res.result)
+              )
 
     ###*
      * View helper for accessing the actual url from a Contentful asset
