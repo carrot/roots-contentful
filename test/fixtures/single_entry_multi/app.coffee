@@ -12,10 +12,7 @@ module.exports =
           id: '6BYT1gNiIEyIw8Og8aQAO6'
           name: 'blog_posts'
           template: 'views/_blog_post.jade'
-          path: (e) -> [
-            "en/blogging/#{e.category}/#{S(e.title).slugify().s}",
-            "fr/blogging/#{e.category}/#{S(e.title).slugify().s}"
-          ]
+          path: (e) -> ("#{lang}/#{S(e.title).slugify().s}" for lang in ['en', 'fr'])
         }
       ]
     )

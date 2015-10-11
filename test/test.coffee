@@ -168,6 +168,7 @@ describe 'single entry views', ->
       h.file.exists(p).should.be.ok
       h.file.contains(p, @title).should.be.true
       h.file.contains(p, @body).should.be.true
+      
 
     after -> unmock_contentful()
     
@@ -175,19 +176,24 @@ describe 'single entry views', ->
     before (done) ->
       @title = 'Real Talk'
       @body  = 'I\'m not about to sit up here, and argue about who\'s to blame.'
-      @category = 'greatest_hits'
       mock_contentful
-        entries: [{fields: {title: @title, body: @body, category: @category}}],
+        entries: [{fields: {title: @title, body: @body}}],
         content_type: {name: 'Blog Post', displayField: 'title'}
       compile_fixture.call(@, 'single_entry_multi').then(-> done()).catch(done)
 
     it 'compiles a single entry to multiple files', ->
       for lang in ['en', 'fr']
-        output = lang + "/blogging/#{@category}/#{S(@title).slugify().s}.html"
+        output = lang + "/#{S(@title).slugify().s}.html"
         p = path.join(@public, output)
         h.file.exists(p).should.be.ok
         h.file.contains(p, @title).should.be.true
         h.file.contains(p, @body).should.be.true
+
+    it 'sets a _url attribute with an array of URLs to allow links to each of the entry\'s files', ->
+      output = "#{S(@title).slugify().s}.html"
+      p = path.join(@public, "en/#{output}")
+      for lang in ['en', 'fr']
+        h.file.contains(p, "#{lang}/#{output}").should.be.true
 
     after -> unmock_contentful()
 
