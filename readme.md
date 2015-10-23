@@ -126,6 +126,15 @@ Optional. Takes an object with different filter criteria, see examples of how to
 
 Optional. Provide a function that returns a string of the relative path to the output file for a given entry without the extension. First argument passed into the function is the entry. Default is `<name>/<slug>` where `slug` is the [slugified](http://stringjs.com/#methods/slugify) output of the entry's `displayField` (a property of the Content Type), and `name` is the provided `name` option above or the default value. This option is ignored if no `template` is given.
 
+If the function returns an array of paths, the given entry is compiled to multiple files. The array of paths can be accessed with `entry._urls`. For instance, the configuration below outputs each blog post entry into two folders, `en` and `fr`, for i18n purposes:
+
+```coffee
+content_types:
+  blog_posts:
+    id: 'xxxxxx'
+    template: 'views/_post.jade'
+    path: (e) -> ("#{lang}/#{slugify(e.title)}" for lang in ['en', 'fr'])
+```
 
 ### Asset Image Helper
 

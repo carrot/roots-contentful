@@ -1,0 +1,7 @@
+- for p in contentful.blog_posts
+  h1= p.title
+  p= p.body
+  ul
+    each url in p._urls
+      li
+        a(href=url)= url

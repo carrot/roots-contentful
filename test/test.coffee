@@ -168,6 +168,40 @@ describe 'single entry views', ->
       h.file.exists(p).should.be.ok
       h.file.contains(p, @title).should.be.true
       h.file.contains(p, @body).should.be.true
+      
+
+    after -> unmock_contentful()
+    
+  describe 'custom multi-path function', ->
+    before (done) ->
+      @title = ['Real Talk', 'Fake Talk']
+      @body  = [
+        'I\'m not about to sit up here, and argue about who\'s to blame.',
+        'I\'m about to sit up here, and not argue about who\'s not to blame.'
+      ]
+      mock_contentful
+        entries: [
+          {fields: {title: @title[0], body: @body[0]}},
+          {fields: {title: @title[1], body: @body[1]}}
+        ],
+        content_type: {name: 'Blog Post', displayField: 'title'}
+      compile_fixture.call(@, 'single_entry_multi').then(-> done()).catch(done)
+
+    it 'compiles a single entry to multiple files', ->
+      for lang in ['en', 'fr']
+        for i in [0, 1]
+          output = "/#{lang}/#{S(@title[i]).slugify().s}.html"
+          p = path.join(@public, output)
+          h.file.exists(p).should.be.ok
+          h.file.contains(p, @title[i]).should.be.true
+          h.file.contains(p, @body[i]).should.be.true
+          h.file.contains(p, "<p>#{output}</p>").should.be.true
+        
+    it 'sets a _urls attribute listing the paths to all of the entry\'s compiled files', ->
+      p = path.join(@public, 'index.html')
+      for lang in ['en', 'fr']
+        for i in [0, 1]
+          h.file.contains(p, "/#{lang}/#{S(@title[i]).slugify().s}.html").should.be.true
 
     after -> unmock_contentful()
 

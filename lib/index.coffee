@@ -118,7 +118,8 @@ module.exports = (opts) ->
       _.assign(_.omit(e, 'fields'), e.fields)
 
     ###*
-     * Sets `_url` property on content with single entry views
+     * Sets `_url` and `_urls` properties on content with single entry views
+     * `_url` takes the value `null` if the content type's custom path function returns multiple paths
      * @param {Array} types - content type objects
      * return {Promise} - promise when urls are set
     ###
@@ -126,7 +127,10 @@ module.exports = (opts) ->
     set_urls = (types) ->
       W.map types, (t) ->
         if t.template then W.map t.content, (entry) ->
-          entry._url = "/#{t.path(entry)}.html"
+          paths = t.path(entry)
+          paths = [paths] if typeof paths == 'string'
+          entry._urls = ("/#{p}.html" for p in paths)
+          entry._url = if entry._urls.length == 1 then entry._urls[0] else null
 
     ###*
      * Builds locals object from types objects with content
@@ -148,11 +152,15 @@ module.exports = (opts) ->
         if not t.template then return W.resolve()
         W.map t.content, (entry) =>
           template = path.join(@roots.root, t.template)
-          @roots.config.locals.entry = entry
           compiler = _.find @roots.config.compilers, (c) ->
             _.contains(c.extensions, path.extname(template).substring(1))
-          compiler.renderFile(template, @roots.config.locals)
-            .then((res) => @util.write("#{t.path(entry)}.html", res.result))
+          W.map entry._urls, (url) =>
+            @roots.config.locals.entry = _.assign({}, entry, { _url: url })
+            compiler.renderFile(template, @roots.config.locals)
+              .then((res) =>
+                @roots.config.locals.entry = null
+                @util.write(url, res.result)
+              )
 
     ###*
      * View helper for accessing the actual url from a Contentful asset
