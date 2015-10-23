@@ -80,7 +80,7 @@ module.exports = (opts) ->
     ###
 
     get_all_content = (types) ->
-      W.map types, (t) =>
+      W.map types, (t) ->
         fetch_content(t)
           .then(format_content)
           .then((c) -> t.content = c)
@@ -119,7 +119,8 @@ module.exports = (opts) ->
 
     ###*
      * Sets `_url` and `_urls` properties on content with single entry views
-     * `_url` takes the value `null` if the content type's custom path function returns multiple paths
+     * `_url` takes the value `null` if the content type's custom path function
+     * returns multiple paths
      * @param {Array} types - content type objects
      * return {Promise} - promise when urls are set
     ###
