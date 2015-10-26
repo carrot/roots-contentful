@@ -142,7 +142,6 @@ module.exports = (opts) ->
     set_locals = (types) ->
       W.map types, (t) =>
         @roots.config.locals.contentful[t.name] = t.content
-        @roots.config.locals._path = undefined
 
     ###*
      * Compiles single entry views for content types
