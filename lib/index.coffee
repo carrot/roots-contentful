@@ -129,9 +129,9 @@ module.exports = (opts) ->
       W.map types, (t) ->
         if t.template then W.map t.content, (entry) ->
           paths = t.path(entry)
-          paths = [paths] if typeof paths == 'string'
+          paths = [paths] if _.isString(paths)
           entry._urls = ("/#{p}.html" for p in paths)
-          entry._url = if entry._urls.length == 1 then entry._urls[0] else null
+          entry._url = if entry._urls.length is 1 then entry._urls[0] else null
 
     ###*
      * Builds locals object from types objects with content
