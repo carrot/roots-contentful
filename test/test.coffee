@@ -54,14 +54,15 @@ describe 'config', ->
   it 'should throw an error without content type id', ->
     compile_fixture.call(@, 'missing_config').should.be.rejected
 
-  it 'allows the content type name to be set through a k/v object config', (done) ->
-    compile_fixture.call(@, 'alt-content-type-config')
-      .with(@)
-      .then ->
-        p = path.join(@public, 'index.html')
-        h.file.contains(p, @title).should.be.true
-        h.file.contains(p, @body).should.be.true
-      .then(-> done()).catch(done)
+  it 'allows the content type name to be set through a k/v object config',
+    (done) ->
+      compile_fixture.call(@, 'alt-content-type-config')
+        .with(@)
+        .then ->
+          p = path.join(@public, 'index.html')
+          h.file.contains(p, @title).should.be.true
+          h.file.contains(p, @body).should.be.true
+        .then(-> done()).catch(done)
 
   after -> unmock_contentful()
 
@@ -114,8 +115,14 @@ describe 'data manipulation', ->
   describe 'sort', ->
     before (done) ->
       @titles = ['Title C', 'Title B', 'Title A']
-      @bodies = ['Rich Boy selling crick', 'Something else', 'Nothing interesting']
-      @entries = ({fields: {title: @titles[index], body: @bodies[index]}} for index in [0..2])
+      @bodies = [
+        'Rich Boy selling crick',
+        'Something else',
+        'Nothing interesting'
+      ]
+      @entries = for index in [0..2]
+        {fields: {title: @titles[index], body: @bodies[index]}}
+
       mock_contentful(entries: @entries)
       compile_fixture.call(@, 'sort').then(-> done()).catch(done)
 
@@ -126,7 +133,11 @@ describe 'data manipulation', ->
     it 'orders data correctly for the project', ->
       p = path.join(@public, 'index.html')
       # Titles should be order A before B before C
-      h.file.contains_match(p, '^.*(Title A)[/<>\\w\\s]*(Title B)[/<>\\w\\s]*(Title C).*$').should.be.true
+      h.file.contains_match(
+        p,
+        '^.*(Title A)[/<>\\w\\s]*(Title B)[/<>\\w\\s]*(Title C).*$'
+      ).should.be.true
+
       for body in @bodies
         h.file.contains(p, body).should.be.true
 
@@ -140,8 +151,14 @@ describe 'data manipulation', ->
   describe 'transform', ->
     before (done) ->
       @titles = ['Title C', 'Title B', 'Title A']
-      @bodies = ['Rich Boy selling crick', 'Something else', 'Nothing interesting']
-      @entries = ({fields: {title: @titles[index], body: @bodies[index]}} for index in [0..2])
+      @bodies = [
+        'Rich Boy selling crick',
+        'Something else',
+        'Nothing interesting'
+      ]
+      @entries = for index in [0..2]
+        {fields: {title: @titles[index], body: @bodies[index]}}
+
       mock_contentful(entries: @entries)
       compile_fixture.call(@, 'transform').then(-> done()).catch(done)
 
@@ -152,7 +169,10 @@ describe 'data manipulation', ->
     it 'does not reorder data', ->
       p = path.join(@public, 'index.html')
       # Titles should be order C before B before A
-      h.file.contains_match(p, '^.*(Title C)[/<>\\w\\s]*(Title B)[/<>\\w\\s]*(Title A).*$').should.be.true
+      h.file.contains_match(
+        p,
+        '^.*(Title C)[/<>\\w\\s]*(Title B)[/<>\\w\\s]*(Title A).*$'
+      ).should.be.true
 
     it 'has manipulated data correctly for the project', ->
       p = path.join(@public, 'index.html')
@@ -223,7 +243,7 @@ describe 'single entry views', ->
 
     after -> unmock_contentful()
 
-    it 'should not have the first entry\'s content in the second entries single view', ->
+    it 'should not have first entry\'s content in second entries single view', ->
       p = path.join(@public, "blog_posts/#{S(@title_2).slugify().s}.html")
       h.file.contains(p, @body).should.not.be.true
 
@@ -271,11 +291,12 @@ describe 'single entry views', ->
           h.file.contains(p, @body[i]).should.be.true
           h.file.contains(p, "<p>#{output}</p>").should.be.true
 
-    it 'sets a _urls attribute listing the paths to all of the entry\'s compiled files', ->
+    it 'sets _urls attribute to all of the entry\'s compiled files', ->
       p = path.join(@public, 'index.html')
       for lang in ['en', 'fr']
         for i in [0, 1]
-          h.file.contains(p, "/#{lang}/#{S(@title[i]).slugify().s}.html").should.be.true
+          h.file.contains(p, "/#{lang}/#{S(@title[i]).slugify().s}.html")
+            .should.be.true
 
     after -> unmock_contentful()
 
