@@ -13,6 +13,7 @@ module.exports =
         }
         {
           id: '7CDlVsacqQc88cmIEGYWMa'
+          locale: 'en-ES'
         }
       ]
     )
