@@ -15,6 +15,10 @@ errors =
   reserved for storing Contentful system metadata, please rename this field to
   a different value.'
 
+hosts =
+  develop: 'preview.contentful.com'
+  production: 'cdn.contentful.com'
+
 module.exports = (opts) ->
   # throw error if missing required config
   if not (opts.access_token && opts.space_id)
@@ -22,6 +26,9 @@ module.exports = (opts) ->
 
   # setup contentful api client
   client = contentful.createClient
+    host: hosts[process.env.CONTENTFUL_ENV] ||
+          hosts.develop if opts.preview ||
+          hosts.production
     accessToken: opts.access_token
     space:       opts.space_id
 
