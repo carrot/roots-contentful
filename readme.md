@@ -36,6 +36,9 @@ module.exports =
           template: 'views/_post.jade'
           filters: { 'fields.environment[in]': ['staging', 'production'] }
           path: (e) -> "blogging/#{e.category}/#{slugify(e.title)}"
+          write: 'data.json'
+          sort: compareFunction
+          transform: transformFunction
         press_links:
           id: 'xxxxxx'
   ]
@@ -138,6 +141,31 @@ content_types:
     id: 'xxxxxx'
     template: 'views/_post.jade'
     path: (e) -> ("#{lang}/#{slugify(e.title)}" for lang in ['en', 'fr'])
+```
+#### write
+
+Optional. Provide the relative path to the output file that will hold the JSON data of the current content type. The top level JSON object will be an array.
+
+#### transform
+
+Optional. Provide a function to transform (map) every entry in a content type. The transformed data is then added to the jade locals variable and written to JSON (if the write property is provided). Transform can also return a [when.js](https://github.com/cujojs/when) promise.
+
+```coffee
+transformFunction = (entry) ->
+  delete entry.myProperty
+  entry
+```
+
+#### sort
+
+Optional. Provide a standard compare function that will sort all the data of a content type. The data is sorted __after__ it is transformed and __before__ it is provided to the jade locals variable or written as JSON.
+
+```coffee
+compareFunction = (a, b) ->
+  # 0           => a and b are equal
+  # -1 or less  => a is before b
+  # 1 or more   => a is after b
+  a.number - b.number
 ```
 
 ### Asset Image Helper

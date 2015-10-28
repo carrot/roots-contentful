@@ -43,8 +43,11 @@ module.exports = (opts) ->
       configure_content(opts.content_types).with(@)
         .then(get_all_content)
         .tap(set_urls)
+        .then(transform_entries)
+        .then(sort_entries)
         .tap(set_locals)
         .tap(compile_entries)
+        .tap(write_entries)
 
     ###*
      * Configures content types set in app.coffee. Sets default values if
@@ -151,6 +154,33 @@ module.exports = (opts) ->
         @roots.config.locals.contentful[t.name] = t.content
 
     ###*
+     * Transforms every type with content with the user provided callback
+     * @param {Array} types - Populated content type objects
+     * @return {Promise} - promise for when compilation is finished
+    ###
+
+    transform_entries = (types) ->
+      W.map types, (t) =>
+        if t.transform
+          W.map t.content, (entry) =>
+            W(entry, t.transform)
+        W.resolve(t)
+
+    ###*
+     * Sort every type content with the user provided callback
+     * @param {Array} types - Populated content type objects
+     * @return {Promise} - promise for when compilation is finished
+    ###
+
+    sort_entries = (types) ->
+      W.map types, (t) =>
+        if t.sort
+          # Unfortunately, in order to sort promises we have to resolve them first.
+          W.all(t.content).then (data) =>
+            t.content = data.sort(t.sort)
+        W.resolve(t)
+
+    ###*
      * Compiles single entry views for content types
      * @param {Array} types - Populated content type objects
      * @return {Promise} - promise for when compilation is finished
@@ -170,6 +200,17 @@ module.exports = (opts) ->
                 @roots.config.locals.entry = null
                 @util.write(url, res.result)
               )
+
+    ###*
+     * Writes all data for type with content as json
+     * @param {Array} types - Populated content type objects
+     * @return {Promise} - promise for when compilation is finished
+    ###
+
+    write_entries = (types) ->
+      W.map types, (t) =>
+        if not t.write then return W.resolve()
+        @util.write(t.write, JSON.stringify(t.content))
 
     ###*
      * View helper for accessing the actual url from a Contentful asset
