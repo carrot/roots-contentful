@@ -40,7 +40,7 @@ module.exports = (opts) ->
       @roots.config.locals.asset = asset_view_helper
 
     setup: ->
-      configure_content(opts.content_types).with(@)
+      configure_content(opts).with(@)
         .then(get_all_content)
         .tap(set_urls)
         .then(transform_entries)
@@ -56,18 +56,40 @@ module.exports = (opts) ->
      * @return {Promise} - returns an array of configured content types
     ###
 
-    configure_content = (types) ->
+    configure_content = (opts) ->
+      types = opts.content_types
+      locales = opts.locales
+
+      if locales is "*" # if locales is wildcard `*`, fetch & set locales
+        locales = fetch_all_locales()
+
       if _.isPlainObject(types) then types = reconfigure_alt_type_config(types)
+      # duplicate & update type to contain locale's data
+      if _.isArray(locales)
+        for locale in locales
+          for t in types
+            unless t.locale? # type's locale overrides global locale
+              tmp = _.clone(t, true) # create clone
+              tmp.prefix = opts.locales_prefix[locale] or "#{locale}-"
+              types.push tmp # add to types
+            else
+              t.prefix ?= "#{t.locale}-" # set prefix, only if it isn't set
+
       W.map types, (t) ->
         if not t.id then return W.reject(errors.no_type_id)
         t.filters ?= {}
+
         if (not t.name || (t.template && not t.path))
           return W client.contentType(t.id).then (res) ->
             t.name ?= pluralize(S(res.name).toLowerCase().underscore().s)
+            unless _.isUndefined t.prefix
+              t.name = t.prefix + t.name # add prefix
+
             if t.template
               t.path ?= (e) -> "#{t.name}/#{S(e[res.displayField]).slugify().s}"
             return t
         return W.resolve(t)
+
 
     ###*
      * Reconfigures content types set in app.coffee using an object instead of
@@ -112,6 +134,19 @@ module.exports = (opts) ->
           )
         )
       )
+
+    ###*
+      * Fetch all locales in space
+      * Used when `*` is used in opts.locales
+      * @return {Array} - returns array of locales
+    ###
+
+    fetch_all_locales = ->
+      W(client.space())
+        .then (res) ->
+          for locale in res.locales
+            locales.push locale.code
+          W.resolve locales
 
     ###*
      * Formats raw response from Contentful
@@ -190,6 +225,7 @@ module.exports = (opts) ->
      * @return {Promise} - promise for when compilation is finished
     ###
 
+    # TODO remove prefix during compilation, from type.name
     compile_entries = (types) ->
       W.map types, (t) =>
         if not t.template then return W.resolve()
