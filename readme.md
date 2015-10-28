@@ -97,13 +97,17 @@ Required. Your Contentful Delivery access token (API key).
 
 Required. The space ID containing the content you wish to retrieve.
 
+#### preview
+
+Optional. (Boolean) Allows you use the Contentful Preview API. Also able to be accessed by setting the environment variable `CONTENTFUL_ENV` to `"develop"` (preview api) or `"production"` (default cdn).
+
 #### content_types
 
 An object whose key-value pairs correspond to a Contentful Content Types. Each
 content type's entries will be set on the `contentful` locals object using
 the key used in the config.
 
-### Configuring a `content_type`  
+### Configuring a `content_type`
 Each object in the content_types array can have the following properties:
 
 #### id
