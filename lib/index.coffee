@@ -58,10 +58,10 @@ module.exports = (opts) ->
 
     configure_content = (opts) ->
       types = opts.content_types
-      locales = opts.locales
+      locales = opts.locale
 
       if locales is "*" # if locales is wildcard `*`, fetch & set locales
-        locales = fetch_all_locales()
+        locales = fetch_all_locales() # TODO Add Test for me
 
       if _.isPlainObject(types) then types = reconfigure_alt_type_config(types)
       # duplicate & update type to contain locale's data
@@ -74,6 +74,8 @@ module.exports = (opts) ->
               types.push tmp # add to types
             else
               t.prefix ?= "#{t.locale}-" # set prefix, only if it isn't set
+      else
+        if _.isString opts.locale then global_locale = true
 
       W.map types, (t) ->
         if not t.id then return W.reject(errors.no_type_id)
@@ -82,12 +84,17 @@ module.exports = (opts) ->
         if (not t.name || (t.template && not t.path))
           return W client.contentType(t.id).then (res) ->
             t.name ?= pluralize(S(res.name).toLowerCase().underscore().s)
-            unless _.isUndefined t.prefix
-              t.name = t.prefix + t.name # add prefix
 
             if t.template
               t.path ?= (e) -> "#{t.name}/#{S(e[res.displayField]).slugify().s}"
             return t
+
+        unless _.isUndefined t.prefix
+          t.name = t.prefix + t.name
+          t.path = t.prefix + t.path
+
+        if global_locale then t.locale or= opts.locale
+
         return W.resolve(t)
 
 
@@ -144,6 +151,7 @@ module.exports = (opts) ->
     fetch_all_locales = ->
       W(client.space())
         .then (res) ->
+          locales = []
           for locale in res.locales
             locales.push locale.code
           W.resolve locales
