@@ -6,6 +6,11 @@ module.exports =
     contentful(
       access_token: 'YOUR_ACCESS_TOKEN'
       space_id: 'aqzq2qya2jm4'
+      locale: ['en-us', 'en-ca']
+      locale_prefix:
+        'en-us': 'english-'
+        'en-ca': 'french-'
+        'en-br': 'spanish-'
       content_types: [
         {
           id: '6BYT1gNiIEyIw8Og8aQAO6'
@@ -13,7 +18,6 @@ module.exports =
         }
         {
           id: '7CDlVsacqQc88cmIEGYWMa'
-          locale: 'en-ES'
         }
       ]
     )
