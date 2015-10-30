@@ -59,9 +59,10 @@ module.exports = (opts) ->
     configure_content = (opts) ->
       types = opts.content_types
       locales = opts.locale
+      lPrefixes = opts.locales_prefix
 
       if locales is "*" # if locales is wildcard `*`, fetch & set locales
-        locales = fetch_all_locales() # TODO Add Test for me
+        locales = fetch_all_locales()
 
       if _.isPlainObject(types) then types = reconfigure_alt_type_config(types)
 
@@ -70,10 +71,14 @@ module.exports = (opts) ->
           for t in types
             unless t.locale? # type's locale overrides global locale
               tmp = _.clone(t, true) # create clone
-              tmp.prefix = opts.locales_prefix[locale] or "#{locale}-"
+              tmp.locale = locale
+              tmp.prefix = lPrefixes?[locale] ? "#{locale}-"
               types.push tmp # add to types
             else
               t.prefix ?= "#{t.locale}-" # set prefix, only if it isn't set
+
+        types = _.remove types, (t) -> t.locale? # remove duplicates w/o locale
+
       else
         if _.isString opts.locale then global_locale = true
 
@@ -90,6 +95,7 @@ module.exports = (opts) ->
             return t
 
         unless _.isUndefined t.prefix
+          console.log t, t.prefix
           t.name = t.prefix + t.name
           t.path = t.prefix + t.path
 
