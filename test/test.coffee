@@ -312,3 +312,17 @@ describe 'single entry views', ->
       h.file.contains(p, "#{@img_path}?w=100&h=100").should.be.true
 
     after -> unmock_contentful()
+
+describe 'locale', ->
+  it 'should render a global locale'
+
+  it 'should render an array of global locales'
+
+  it 'should render the content type locale, not the global'
+
+  it 'should rendering using the correct prefix'
+
+  it 'should fetch all locales from * wildcard'
+
+  it 'should render using the correct template'
+
