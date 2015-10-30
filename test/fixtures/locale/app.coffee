@@ -14,7 +14,7 @@ module.exports =
       content_types: [
         {
           id: '6BYT1gNiIEyIw8Og8aQAO6'
-          locale: 'en-ES'
+          locale: 'en-es'
         }
         {
           id: '7CDlVsacqQc88cmIEGYWMa'
