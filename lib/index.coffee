@@ -64,8 +64,8 @@ module.exports = (opts) ->
         locales = fetch_all_locales() # TODO Add Test for me
 
       if _.isPlainObject(types) then types = reconfigure_alt_type_config(types)
-      # duplicate & update type to contain locale's data
-      if _.isArray(locales)
+
+      if _.isArray(locales) # duplicate & update type to contain locale's data
         for locale in locales
           for t in types
             unless t.locale? # type's locale overrides global locale
