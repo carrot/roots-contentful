@@ -113,8 +113,8 @@ module.exports = (opts) ->
                 t.name = _.trimLeft(t.name, t.prefix)
                 return t
 
-            unless _.isUndefined t.prefix
-              t.name = t.prefix + t.name
+            #unless _.isUndefined t.prefix
+            #  t.name = t.prefix + t.name
 
             if global_locale? then t.locale or= opts.locale
 
@@ -196,7 +196,7 @@ module.exports = (opts) ->
 
     format_entry = (e) ->
       if _.has(e.fields, 'sys') then return W.reject(errors.sys_conflict)
-      _.assign(_.omit(e, 'fields'), e.fields)
+      _.assign(_.omit(_.omit(e, 'sys'), 'fields'), e.fields)
 
     ###*
      * Sets `_url` and `_urls` properties on content with single entry views
@@ -222,7 +222,10 @@ module.exports = (opts) ->
 
     set_locals = (types) ->
       W.map types, (t) =>
-        @roots.config.locals.contentful[t.name] = t.content
+        if @roots.config.locals.contentful[t.name]
+          @roots.config.locals.contentful[t.name].push t.content[0]
+        else
+          @roots.config.locals.contentful[t.name] = t.content
 
     ###*
      * Transforms every type with content with the user provided callback
