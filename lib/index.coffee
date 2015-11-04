@@ -221,11 +221,10 @@ module.exports = (opts) ->
     ###
 
     set_locals = (types) ->
+      contentful = @roots.config.locals.contentful
       W.map types, (t) =>
-        if @roots.config.locals.contentful[t.name]
-          @roots.config.locals.contentful[t.name].push t.content[0]
-        else
-          @roots.config.locals.contentful[t.name] = t.content
+        if contentful[t.name] then contentful[t.name].push t.content[0]
+        else contentful[t.name] = t.content
 
     ###*
      * Transforms every type with content with the user provided callback
