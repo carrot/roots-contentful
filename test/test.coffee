@@ -368,8 +368,11 @@ describe 'locale', ->
 
     it 'should fetch all locales from * wildcard', ->
       p = path.join @public, 'index.html'
-      h.file.contains p, 'Throw Some Ds'
-        .should.be.true
+      for title, i in @title
+        h.file.contains p, title
+          .should.be.true
+        h.file.contains p, @body[i]
+          .should.be.true
 
     after -> unmock_contentful()
 
