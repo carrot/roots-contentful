@@ -19,10 +19,20 @@ mock_contentful = (opts = {}) ->
     entries: [
       sys:
         sys: 'data'
+        locale: 'Default Locale'
       fields:
         title: 'Default Title'
         body: 'Default Body'
     ]
+    space:
+      sys:
+        type: "Space",
+        id: "cfexampleapi"
+      name: "Contentful Example API",
+      locales: [
+        {code: "en-US", name: "English"},
+        {code: "tlh", name: "Klingon"}
+      ]
     content_type:
       name: 'Blog Post'
       displayField: 'title'
@@ -30,7 +40,14 @@ mock_contentful = (opts = {}) ->
   mockery.registerMock 'contentful',
     createClient: ->
       contentType: -> W.resolve(opts.content_type)
-      entries: -> W.resolve(opts.entries)
+      space: -> W.resolve(opts.space)
+      entries: (req) ->
+        if _.isUndefined req.locale
+          W.resolve(opts.entries)
+        else
+          W.resolve opts.entries.filter (entry) ->
+            return entry.sys.locale is req.locale
+
 
 unmock_contentful = ->
   mockery.deregisterAll()
@@ -314,15 +331,61 @@ describe 'single entry views', ->
     after -> unmock_contentful()
 
 describe 'locale', ->
-  it 'should render a global locale'
+  describe.only 'setup', ->
+    before (done) ->
+      @title = ['Throw Some Ds', '\'op Ds chuH', 'arrojar algo de Ds\'']
+      @body  = [
+        'Rich Boy selling crack',
+        'mIp loDHom ngev pe\'vIl vaj pumDI\' qoghlIj'
+        'Niño rico venta de crack'
+      ]
+      mock_contentful(
+        entries: [
+          {
+            fields: [{title: @title[0], body: @body[0]}]
+            sys:
+              locale: 'en-US'
+          }
+          {
+            fields: [{title: @title[1], body: @body[1]}],
+            sys:
+              locale: 'tlh'
+          }
+          {
+            fields: [{title: @title[2], body: @body[2]}],
+            sys:
+              locale: 'en-es'
+          }
+        ],
+        space:
+          locales: [
+            { code: 'en-US', name: 'English' },
+            { code: 'tlh', name: 'Klingon' },
+            { code: 'en-es', name: 'Spanish' }
+          ]
+      )
+      compile_fixture.call(@, 'locale_setup').then(-> done()).catch(done)
 
-  it 'should render an array of global locales'
+    it 'should fetch all locales from * wildcard', ->
+      p = path.join @public, 'index.html'
+      h.file.contains p, 'Throw Some Ds'
+        .should.be.true
 
-  it 'should render the content type locale, not the global'
+    after -> unmock_contentful()
 
-  it 'should rendering using the correct prefix'
+  describe 'global', ->
+    it 'should render a single global locale'
 
-  it 'should fetch all locales from * wildcard'
+    it 'should render an array of global locales'
 
-  it 'should render using the correct template'
+    it 'should render the content type locale, not the global'
+
+  describe 'scoped locale', ->
+    it 'should render scope locale'
+
+  describe 'locales_prefix', ->
+    it 'should render using the correct template'
+
+  describe 'complex locale', ->
+    it 'should rendering using the correct prefix'
 
