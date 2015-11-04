@@ -61,47 +61,64 @@ module.exports = (opts) ->
       locales = opts.locale
       lPrefixes = opts.locales_prefix
 
-      if locales is "*" # if locales is wildcard `*`, fetch & set locales
-        locales = fetch_all_locales()
+      isWildcard = -> # if locales is wildcard `*`, fetch & set locales
+        return W(
+          if locales is "*"
+            fetch_all_locales().then (res) ->
+              locales = res
+              W.resolve locales
+          else
+            W.resolve
+        )
 
-      if _.isPlainObject(types) then types = reconfigure_alt_type_config(types)
+      reconfigObj = ->
+        types = reconfigure_alt_type_config(types) if _.isPlainObject(types)
 
-      if _.isArray(locales) # duplicate & update type to contain locale's data
-        for locale in locales
-          for t in types
-            unless t.locale? # type's locale overrides global locale
-              tmp = _.clone(t, true) # create clone
-              tmp.locale = locale
-              tmp.prefix = lPrefixes?[locale] ? "#{locale}-"
-              types.push tmp # add to types
-            else
-              t.prefix ?= "#{t.locale}-" # set prefix, only if it isn't set
+      localesArray = ->
+        if _.isArray(locales) # duplicate & update type to contain locale's data
+          for locale in locales
+            for t in types
+              unless t.locale? # type's locale overrides global locale
+                tmp = _.clone(t, true) # create clone
+                tmp.locale = locale
+                tmp.prefix = lPrefixes?[locale] ? "#{locale}-"
+                types.push tmp # add to types
+              else
+                # set prefix, only if it isn't set
+                t.prefix ?= lPrefixes?[locale] ? "#{locale}-"
 
-        types = _.remove types, (t) -> t.locale? # remove duplicates w/o locale
+          types = _.remove types, (t) -> t.locale? # remove duplicates w/o locale
+        else
+          if _.isString opts.locale
+            global_locale = true
 
-      else
-        if _.isString opts.locale then global_locale = true
+      isWildcard()
+        .then reconfigObj
+        .then localesArray
+        .then ->
+          W.map types, (t) ->
+            if not t.id then return W.reject(errors.no_type_id)
+            t.filters ?= {}
 
-      W.map types, (t) ->
-        if not t.id then return W.reject(errors.no_type_id)
-        t.filters ?= {}
+            if (not t.name || (t.template && not t.path))
+              return W client.contentType(t.id).then (res) ->
+                t.name ?= pluralize(S(res.name).toLowerCase().underscore().s)
 
-        if (not t.name || (t.template && not t.path))
-          return W client.contentType(t.id).then (res) ->
-            t.name ?= pluralize(S(res.name).toLowerCase().underscore().s)
+                unless _.isUndefined t.prefix
+                  t.name = t.prefix + t.name
 
-            if t.template
-              t.path ?= (e) -> "#{t.name}/#{S(e[res.displayField]).slugify().s}"
-            return t
+                if t.template or lPrefixes?
+                  t.path ?= (e) -> "#{t.name}/#{S(e[res.displayField]).slugify().s}"
 
-        unless _.isUndefined t.prefix
-          console.log t, t.prefix
-          t.name = t.prefix + t.name
-          t.path = t.prefix + t.path
+                t.name = _.trimLeft(t.name, t.prefix)
+                return t
 
-        if global_locale then t.locale or= opts.locale
+            unless _.isUndefined t.prefix
+              t.name = t.prefix + t.name
 
-        return W.resolve(t)
+            if global_locale? then t.locale or= opts.locale
+
+            return W.resolve(t)
 
 
     ###*
@@ -155,12 +172,13 @@ module.exports = (opts) ->
     ###
 
     fetch_all_locales = ->
-      W(client.space())
+      W(client.space()
         .then (res) ->
           locales = []
           for locale in res.locales
             locales.push locale.code
           W.resolve locales
+      )
 
     ###*
      * Formats raw response from Contentful
@@ -239,7 +257,6 @@ module.exports = (opts) ->
      * @return {Promise} - promise for when compilation is finished
     ###
 
-    # TODO remove prefix during compilation, from type.name
     compile_entries = (types) ->
       W.map types, (t) =>
         if not t.template then return W.resolve()
