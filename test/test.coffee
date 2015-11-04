@@ -331,7 +331,7 @@ describe 'single entry views', ->
     after -> unmock_contentful()
 
 describe 'locale', ->
-  describe.only 'setup', ->
+  describe 'setup', ->
     before (done) ->
       @title = ['Throw Some Ds', '\'op Ds chuH', 'arrojar algo de Ds\'']
       @body  = [
@@ -342,17 +342,17 @@ describe 'locale', ->
       mock_contentful(
         entries: [
           {
-            fields: [{title: @title[0], body: @body[0]}]
+            fields: {title: @title[0], body: @body[0]}
             sys:
               locale: 'en-US'
           }
           {
-            fields: [{title: @title[1], body: @body[1]}],
+            fields: {title: @title[1], body: @body[1]},
             sys:
               locale: 'tlh'
           }
           {
-            fields: [{title: @title[2], body: @body[2]}],
+            fields: {title: @title[2], body: @body[2]},
             sys:
               locale: 'en-es'
           }
