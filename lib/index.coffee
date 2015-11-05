@@ -222,7 +222,6 @@ module.exports = (opts) ->
     set_locals = (types) ->
       contentful = @roots.config.locals.contentful
       W.map types, (t) =>
-        console.log t.name, JSON.stringify t.content
         if contentful[t.name] then contentful[t.name].push t.content[0]
         else contentful[t.name] = t.content
 
