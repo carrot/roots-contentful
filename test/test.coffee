@@ -569,6 +569,3 @@ describe.only 'locale', ->
       h.file.contains spanish, @body[1]
         .should.be.false
 
-  describe 'complex locale', ->
-    it 'should rendering using the correct prefix'
-
