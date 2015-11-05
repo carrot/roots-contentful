@@ -81,11 +81,11 @@ module.exports = (opts) ->
               unless t.locale? # type's locale overrides global locale
                 tmp = _.clone(t, true) # create clone
                 tmp.locale = locale
-                tmp.prefix = lPrefixes?[locale] ? "#{locale}-"
+                tmp.prefix = lPrefixes?[locale] ? "#{locale.replace(/-/,'_')}_"
                 types.push tmp # add to types
               else
                 # set prefix, only if it isn't set
-                t.prefix ?= lPrefixes?[locale] ? "#{locale}-"
+                t.prefix ?= lPrefixes?[locale] ? "#{locale.replace(/-/,'_')}_"
 
           types = _.remove types, (t) -> t.locale? # remove duplicates w/o locale
         else
@@ -104,17 +104,16 @@ module.exports = (opts) ->
               return W client.contentType(t.id).then (res) ->
                 t.name ?= pluralize(S(res.name).toLowerCase().underscore().s)
 
-                unless _.isUndefined t.prefix
+                unless _.isUndefined lPrefixes
                   t.name = t.prefix + t.name
 
                 if t.template or lPrefixes?
                   t.path ?= (e) -> "#{t.name}/#{S(e[res.displayField]).slugify().s}"
 
-                t.name = _.trimLeft(t.name, t.prefix)
                 return t
 
-            #unless _.isUndefined t.prefix
-            #  t.name = t.prefix + t.name
+            unless _.isUndefined lPrefixes
+              t.name = t.prefix + t.name
 
             if global_locale? then t.locale or= opts.locale
 
@@ -223,6 +222,7 @@ module.exports = (opts) ->
     set_locals = (types) ->
       contentful = @roots.config.locals.contentful
       W.map types, (t) =>
+        console.log t.name, JSON.stringify t.content
         if contentful[t.name] then contentful[t.name].push t.content[0]
         else contentful[t.name] = t.content
 
