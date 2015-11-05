@@ -330,7 +330,7 @@ describe 'single entry views', ->
 
     after -> unmock_contentful()
 
-describe.only 'locale', ->
+describe 'locale', ->
   describe 'setup', ->
     before (done) ->
       @title = ['Throw Some Ds', '\'op Ds chuH', 'arrojar algo de Ds\'']
