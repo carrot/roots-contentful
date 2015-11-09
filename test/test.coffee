@@ -260,7 +260,7 @@ describe 'single entry views', ->
 
     after -> unmock_contentful()
 
-    it 'should not have first entry\'s content in second entries single view', ->
+    it 'should not have first entry\'s content in 2nd entries single view', ->
       p = path.join(@public, "blog_posts/#{S(@title_2).slugify().s}.html")
       h.file.contains(p, @body).should.not.be.true
 
@@ -568,4 +568,3 @@ describe 'locale', ->
         .should.be.true
       h.file.contains spanish, @body[1]
         .should.be.false
-

@@ -87,7 +87,7 @@ module.exports = (opts) ->
                 # set prefix, only if it isn't set
                 t.prefix ?= lPrefixes?[locale] ? "#{locale.replace(/-/,'_')}_"
 
-          types = _.remove types, (t) -> t.locale? # remove duplicates w/o locale
+          types = _.remove types, (t) -> t.locale? # remove dupes w/o locale
         else
           if _.isString opts.locale
             global_locale = true
@@ -108,7 +108,8 @@ module.exports = (opts) ->
                   t.name = t.prefix + t.name
 
                 if t.template or lPrefixes?
-                  t.path ?= (e) -> "#{t.name}/#{S(e[res.displayField]).slugify().s}"
+                  t.path ?= (e) ->
+                    "#{t.name}/#{S(e[res.displayField]).slugify().s}"
 
                 return t
 
@@ -221,7 +222,7 @@ module.exports = (opts) ->
 
     set_locals = (types) ->
       contentful = @roots.config.locals.contentful
-      W.map types, (t) =>
+      W.map types, (t) ->
         if contentful[t.name] then contentful[t.name].push t.content[0]
         else contentful[t.name] = t.content
 
@@ -232,9 +233,9 @@ module.exports = (opts) ->
     ###
 
     transform_entries = (types) ->
-      W.map types, (t) =>
+      W.map types, (t) ->
         if t.transform
-          W.map t.content, (entry) =>
+          W.map t.content, (entry) ->
             W(entry, t.transform)
         W.resolve(t)
 
@@ -245,10 +246,10 @@ module.exports = (opts) ->
     ###
 
     sort_entries = (types) ->
-      W.map types, (t) =>
+      W.map types, (t) ->
         if t.sort
-          # Unfortunately, in order to sort promises we have to resolve them first.
-          W.all(t.content).then (data) =>
+          # In order to sort promises we have to resolve them first.
+          W.all(t.content).then (data) ->
             t.content = data.sort(t.sort)
         W.resolve(t)
 
