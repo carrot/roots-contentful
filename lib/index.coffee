@@ -26,11 +26,12 @@ module.exports = (opts) ->
 
   # setup contentful api client
   client = contentful.createClient
-    host: hosts[process.env.CONTENTFUL_ENV] ||
-          hosts.develop if opts.preview ||
-          hosts.production
+    host:
+      hosts[process.env.CONTENTFUL_ENV] ||
+      (hosts.develop if opts.preview)   ||
+      hosts.production
     accessToken: opts.access_token
-    space:       opts.space_id
+    space: opts.space_id
 
   class RootsContentful
     constructor: (@roots) ->
