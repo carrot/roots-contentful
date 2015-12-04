@@ -7,7 +7,7 @@
     "url": "https://github.com/carrot/roots-contentful/issues"
   },
   "dependencies": {
-    "contentful": "^1.1.5",
+    "contentful": "1.2.x",
     "lodash": "^3.10.1",
     "pluralize": "^1.2.1",
     "roots-util": "0.1.x",
