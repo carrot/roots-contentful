@@ -39,6 +39,7 @@ module.exports = (opts) ->
       @roots.config.locals ?= {}
       @roots.config.locals.contentful ?= {}
       @roots.config.locals.asset = asset_view_helper
+      @cache = opts.cache || false
 
     setup: ->
       configure_content(opts.content_types).with(@)
@@ -91,11 +92,15 @@ module.exports = (opts) ->
     ###
 
     get_all_content = (types) ->
-      W.map types, (t) ->
-        fetch_content(t)
-          .then(format_content)
-          .then((c) -> t.content = c)
-          .yield(t)
+      # only fetch content if caching is off and the contentful local exists
+      if (_.isEmpty(@roots.config.locals.contentful) && !@cache)
+        W.map types, (t) ->
+          fetch_content(t)
+            .then(format_content)
+            .then((c) -> t.content = c)
+            .yield(t)
+      else
+        return @roots.config.locals.contentful
 
     ###*
      * Fetch entries for a single content type object
@@ -161,9 +166,9 @@ module.exports = (opts) ->
     ###
 
     transform_entries = (types) ->
-      W.map types, (t) =>
+      W.map types, (t) ->
         if t.transform
-          W.map t.content, (entry) =>
+          W.map t.content, (entry) ->
             W(entry, t.transform)
         W.resolve(t)
 
@@ -174,10 +179,10 @@ module.exports = (opts) ->
     ###
 
     sort_entries = (types) ->
-      W.map types, (t) =>
+      W.map types, (t) ->
         if t.sort
-          # Unfortunately, in order to sort promises we have to resolve them first.
-          W.all(t.content).then (data) =>
+          # in order to sort promises we have to resolve them first.
+          W.all(t.content).then (data) ->
             t.content = data.sort(t.sort)
         W.resolve(t)
 
