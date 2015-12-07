@@ -1,8 +1,8 @@
 {
   "name": "roots-contentful",
   "description": "An extension for using roots with the API-driven Contentful CMS",
-  "version": "0.0.8",
-  "author": "joshrowley",
+  "version": "0.0.9",
+  "author": "Carrot Creative",
   "bugs": {
     "url": "https://github.com/carrot/roots-contentful/issues"
   },
