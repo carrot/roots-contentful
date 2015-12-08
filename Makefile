@@ -1,11 +1,11 @@
 build:
-	cp -R lib src
-	./node_modules/.bin/coffee -c lib
-	find lib -iname "*.coffee" -exec rm '{}' ';'
+	npm run build
 
 unbuild:
-	rm -rf lib
-	mv src lib
+	npm run unbuild
 
 coveralls:
-	NODE_ENV=test istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage
+	npm run coveralls
+
+release:
+	npm run release

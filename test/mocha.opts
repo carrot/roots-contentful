@@ -1,4 +1,4 @@
 --reporter spec
---compilers coffee:coffee-script/register
+--compilers js:babel-register,coffee:coffee-script/register 
 --require test/support/helpers
 --timeout 30000
