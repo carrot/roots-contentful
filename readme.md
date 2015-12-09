@@ -1,10 +1,14 @@
 # Roots Contentful
 
-[![npm](http://img.shields.io/npm/v/roots-contentful.svg?style=flat)](https://badge.fury.io/js/roots-contentful) [![tests](http://img.shields.io/travis/carrot/roots-contentful/master.svg?style=flat)](https://travis-ci.org/carrot/roots-contentful) [![dependencies](http://img.shields.io/gemnasium/carrot/roots-contentful.svg?style=flat)](https://gemnasium.com/carrot/roots-contentful)
-[![devDependencies](https://img.shields.io/david/dev/carrot/roots-contentful.svg)](https://gemnasium.com/carrot/roots-contentful)
-[![Coverage Status](https://img.shields.io/coveralls/carrot/roots-contentful.svg)](https://coveralls.io/r/carrot/roots-contentful?branch=master)
+Info | Badges
+-----|-------
+Version | [![github release](https://img.shields.io/github/release/declandewet/roots-contentful-es2016.svg?style=flat-square)](https://github.com/declandewet/roots-contentful-es2016/releases/latest) [![npm version](https://img.shields.io/npm/v/roots-contentful-es2016.svg?style=flat-square)](http://npmjs.org/package/roots-contentful-es2016)
+License | [![npm license](https://img.shields.io/npm/l/roots-contentful-es2016.svg?style=flat-square)](https://github.com/declandewet/roots-contentful-es2016/blob/master/license.md)
+Popularity | [![npm downloads](https://img.shields.io/npm/dm/roots-contentful-es2016.svg?style=flat-square)](http://npm-stat.com/charts.html?package=roots-contentful-es2016)
+Testing | [![build status](https://img.shields.io/travis/declandewet/roots-contentful-es2016.svg?style=flat-square)](https://travis-ci.org/declandewet/roots-contentful-es2016) [![test coverage](https://img.shields.io/coveralls/declandewet/roots-contentful-es2016.svg?style=flat-square)](https://coveralls.io/github/declandewet/roots-contentful-es2016)
+Quality | [![dependency status](https://img.shields.io/david/declandewet/roots-contentful-es2016.svg?style=flat-square)](https://david-dm.org/declandewet/roots-contentful-es2016) [![dev dependency status](https://img.shields.io/david/dev/declandewet/roots-contentful-es2016.svg?style=flat-square)](https://david-dm.org/declandewet/roots-contentful-es2016#info=devDependencies)
 
-An extension for using [roots](https://github.com/jenius/roots) with the Contentful CMS API.
+An extension for using [roots](https://github.com/jenius/roots) with the Contentful CMS API, written in ES2016.
 
 > **Note:** This project is in early development, and versioning is a little different. [Read this](http://markup.im/#q4_cRZ1Q) for more details.
 

@@ -2,8 +2,42 @@
   "name": "roots-contentful-es2016",
   "description": "An extension for using roots with the API-driven Contentful CMS, written in ES2016",
   "version": "0.0.8",
-  "author": "declandewet",
-  "contributors": {},
+  "author": "Carrot Creative",
+  "contributors": [
+    {
+      "name": "joshrowley"
+    },
+    {
+      "name": "slang800"
+    },
+    {
+      "name": "axelboc"
+    },
+    {
+      "name": "hhsnopek"
+    },
+    {
+      "name": "kylemac"
+    },
+    {
+      "name": "jenius"
+    },
+    {
+      "name": "teresus"
+    },
+    {
+      "name": "nporteschaikin"
+    },
+    {
+      "name": "pxlpnk"
+    },
+    {
+      "name": "t0pth4t"
+    },
+    {
+      "name": "declandewet"
+    }
+  ],
   "bugs": {
     "url": "https://github.com/declandewet/roots-contentful-es2016/issues"
   },
@@ -24,6 +58,7 @@
     "chai-as-promised": "5.1.0",
     "coffee-script": "1.10.0",
     "coveralls": "2.x",
+    "isparta": "^4.0.0",
     "istanbul": "0.4.1",
     "mocha": "2.3.4",
     "mockery": "1.4.x",
