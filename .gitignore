@@ -2,3 +2,13 @@
 node_modules
 coverage
 src
+logs
+*.log
+npm-debug.log*
+pids
+*.pid
+*.seed
+lib-cov
+.grunt
+.lock-wscript
+build/Release
