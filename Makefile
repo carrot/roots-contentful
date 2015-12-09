@@ -4,8 +4,8 @@ build:
 unbuild:
 	npm run unbuild
 
-coveralls:
-	npm run coveralls
+coverage:
+	npm run coverage
 
 release:
 	npm run release

@@ -14,11 +14,51 @@ If you are opening an issue about a bug, make sure that you include clear steps 
 - Run `npm install`
 - Put in work
 
-### Testing
+### Build Commands
 
-This project is constantly evolving, and to ensure that things are secure and working for everyone, we need to have tests. If you are adding a new feature, please make sure to add a test for it. The test suite for this project uses [mocha](http://visionmedia.github.io/mocha/) and [should](https://github.com/visionmedia/should.js/)/
+> **Note:** if your environment does not support `make` utilities,
+> replace `make` with `npm run` when you type a build command.
 
-To run the test suite, make sure you have installed mocha (`npm install mocha -g`), then you can use the `npm test` or simply `mocha` command to run the tests.
+#### Testing
+
+This project is constantly evolving, and to ensure that things are secure and working for everyone, we need to have tests. If you are adding a new feature, please make sure to add a test for it. The test suite for this project uses [mocha](http://visionmedia.github.io/mocha/) and [chai](http://chaijs.com/)
+
+To run the tests:
+
+```
+$ npm test
+```
+
+To create a coverage report:
+
+```
+$ make coverage
+```
+
+#### Building
+
+Building the project involves compiling the ES2016 syntax down to
+regular ES5 using [Babel](http://babeljs.io). This command will move
+the contents of `lib/` into `src/` and then compiles `src/` into `lib/`.
+
+```
+$ make build
+```
+
+The nature of the above command requires cleanup if you want the original
+source code back in it's original place. To do that, use the following:
+
+```
+$ make unbuild
+```
+
+#### Publishing to NPM
+
+This command will run `make build`, then `npm publish`, then `make unbuild`.
+
+```
+$ make release
+```
 
 ### Code Style
 
