@@ -1,7 +1,7 @@
 {
   "name": "roots-contentful-es2016",
   "description": "An extension for using roots with the API-driven Contentful CMS, written in ES2016",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "author": "Carrot Creative",
   "contributors": [
     {
