@@ -1,43 +1,8 @@
 {
   "name": "roots-contentful",
-  "description": "An extension for using roots with the API-driven Contentful CMS, written in ES2016",
+  "description": "An extension for using roots with the API-driven Contentful CMS",
   "version": "0.0.9",
   "author": "Carrot Creative",
-  "contributors": [
-    {
-      "name": "joshrowley"
-    },
-    {
-      "name": "slang800"
-    },
-    {
-      "name": "axelboc"
-    },
-    {
-      "name": "hhsnopek"
-    },
-    {
-      "name": "kylemac"
-    },
-    {
-      "name": "jenius"
-    },
-    {
-      "name": "teresus"
-    },
-    {
-      "name": "nporteschaikin"
-    },
-    {
-      "name": "pxlpnk"
-    },
-    {
-      "name": "t0pth4t"
-    },
-    {
-      "name": "declandewet"
-    }
-  ],
   "bugs": {
     "url": "https://github.com/carrot/roots-contentful/issues"
   },
