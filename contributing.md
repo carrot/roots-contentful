@@ -36,9 +36,12 @@ $ make lint
 
 To lint the source and run the tests:
 
-```
+```bash
 $ npm test
+# or, for optional request logging:
+$ NODE_DEBUG=request npm test
 ```
+
 
 To create a coverage report:
 

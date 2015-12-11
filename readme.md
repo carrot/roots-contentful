@@ -182,6 +182,16 @@ roots-contentful also provides a convenient view helper called `asset` that allo
   img(src!= asset(post.image, {w: 100, h: 100, q: 50}))
 ```
 
+### Debugging Requests
+
+This extension makes network requests. If you need to log requests for debugging, set your `NODE_DEBUG` environment variable to `request`.
+
+For example, in a `roots compile` command:
+
+```
+$ NODE_DEBUG=request roots compile --verbose
+```
+
 ### License & Contributing
 
 - Details on the license [can be found here](license.md)
