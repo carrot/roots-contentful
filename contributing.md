@@ -73,7 +73,7 @@ $ make release
 
 ### Code Style
 
-To keep a consistant coding style in the project, we're using [Polar Mobile's guide](https://github.com/polarmobile/coffeescript-style-guide), with one difference begin that much of this project uses `under_scores` rather than `camelCase` for variable naming. For any inline documentation in the code, we're using [JSDoc](http://usejsdoc.org/).
+To keep a consistent coding style in the project, we're using [JavaScript Standard Style](https://github.com/feross/standard), with one difference being that much of this project uses `under_scores` rather than `camelCase` for variable naming. For any inline documentation in the code, we're using [JSDoc](http://usejsdoc.org/).
 
 ### Commit Cleanliness
 
