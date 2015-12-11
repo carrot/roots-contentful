@@ -1,4 +1,4 @@
-contentful = require '../../..'
+contentful = require '../../../src'
 
 megaTransform = (entry)->
   delete entry.body

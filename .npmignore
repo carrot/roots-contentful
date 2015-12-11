@@ -1,4 +1,8 @@
 test
 src
 .travis.yml
+.istanbul.yml
+.editorconfig
+.babelrc
+wallaby.js
 Makefile

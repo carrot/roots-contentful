@@ -17,7 +17,7 @@ babelConfig.babel = babel
 module.exports = function (w) {
   return {
     files: [
-      'lib/**/*.js'
+      'src/**/*.js'
     ],
 
     tests: [

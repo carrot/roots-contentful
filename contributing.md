@@ -57,18 +57,10 @@ $ make coveralls
 > **Note:** Building the project will not work if any of the tests fail.
 
 Building involves compiling the ES2016 syntax down to
-regular ES5 using [Babel](http://babeljs.io). This command will run the tests - on success it will then move
-the contents of `lib/` into `src/` and then compile `src/` into `lib/`.
+regular ES5 using [Babel](http://babeljs.io). This command will run the tests - on success it will then compile the contents of `src/` into `lib/`.
 
 ```
 $ make build
-```
-
-**Important:** The nature of the above command requires cleanup if you want the original
-source code back in it's original place. To do that, use the following:
-
-```
-$ make unbuild
 ```
 
 #### Publishing to NPM

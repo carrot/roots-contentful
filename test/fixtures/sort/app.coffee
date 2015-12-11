@@ -1,4 +1,4 @@
-contentful = require '../../..'
+contentful = require '../../../src'
 
 megaSort = (a, b)->
   a.title.localeCompare(b.title)

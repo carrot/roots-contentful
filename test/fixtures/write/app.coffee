@@ -1,4 +1,4 @@
-contentful = require '../../..'
+contentful = require '../../../src'
 
 module.exports =
   ignores: ["**/_*", "**/.DS_Store"]
