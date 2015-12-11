@@ -14,6 +14,11 @@ If you are opening an issue about a bug, make sure that you include clear steps 
 - Run `npm install`
 - Put in work
 
+### `pre-push`, `pre-commit` Linting
+
+Provided dependencies are installed, `git push` and `git commit` will
+not work unless this project passes a linting check.
+
 ### Build Commands
 
 > **Note:** if your environment does not support `make` utilities,
@@ -23,7 +28,13 @@ If you are opening an issue about a bug, make sure that you include clear steps 
 
 This project is constantly evolving, and to ensure that things are secure and working for everyone, we need to have tests. If you are adding a new feature, please make sure to add a test for it. The test suite for this project uses [mocha](http://visionmedia.github.io/mocha/) and [chai](http://chaijs.com/)
 
-To run the tests:
+To lint the source:
+
+```
+$ make lint
+```
+
+To lint the source and run the tests:
 
 ```
 $ npm test
@@ -35,17 +46,25 @@ To create a coverage report:
 $ make coverage
 ```
 
+To feed a coverage report to coveralls:
+
+```
+$ make coveralls
+```
+
 #### Building
 
-Building the project involves compiling the ES2016 syntax down to
-regular ES5 using [Babel](http://babeljs.io). This command will move
-the contents of `lib/` into `src/` and then compiles `src/` into `lib/`.
+> **Note:** Building the project will not work if any of the tests fail.
+
+Building involves compiling the ES2016 syntax down to
+regular ES5 using [Babel](http://babeljs.io). This command will run the tests - on success it will then move
+the contents of `lib/` into `src/` and then compile `src/` into `lib/`.
 
 ```
 $ make build
 ```
 
-The nature of the above command requires cleanup if you want the original
+**Important:** The nature of the above command requires cleanup if you want the original
 source code back in it's original place. To do that, use the following:
 
 ```
