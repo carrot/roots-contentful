@@ -1,5 +1,9 @@
 # Roots Contentful
 
+An extension for using [roots](https://github.com/jenius/roots) with the Contentful CMS API.
+
+> **Note:** This project is in early development, and versioning is a little different. [Read this](http://markup.im/#q4_cRZ1Q) for more details.
+
 Info | Badges
 -----|-------
 Version | [![github release](https://img.shields.io/github/release/carrot/roots-contentful.svg?style=flat-square)](https://github.com/carrot/roots-contentful/releases/latest) [![npm version](https://img.shields.io/npm/v/roots-contentful-es2016.svg?style=flat-square)](http://npmjs.org/package/roots-contentful-es2016)
@@ -8,10 +12,6 @@ Popularity | [![npm downloads](https://img.shields.io/npm/dm/roots-contentful-es
 Testing | [![build status](https://img.shields.io/travis/carrot/roots-contentful.svg?style=flat-square)](https://travis-ci.org/carrot/roots-contentful) [![test coverage](https://img.shields.io/coveralls/carrot/roots-contentful.svg?style=flat-square)](https://coveralls.io/github/carrot/roots-contentful)
 Quality | [![dependency status](https://img.shields.io/david/carrot/roots-contentful.svg?style=flat-square)](https://david-dm.org/carrot/roots-contentful) [![dev dependency status](https://img.shields.io/david/dev/carrot/roots-contentful.svg?style=flat-square)](https://david-dm.org/carrot/roots-contentful#info=devDependencies)
 Code Style | [![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
-
-An extension for using [roots](https://github.com/jenius/roots) with the Contentful CMS API.
-
-> **Note:** This project is in early development, and versioning is a little different. [Read this](http://markup.im/#q4_cRZ1Q) for more details.
 
 ### Why Should You Care?
 
