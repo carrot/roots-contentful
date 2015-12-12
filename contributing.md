@@ -68,9 +68,19 @@ $ make build
 
 #### Publishing to NPM
 
-This command will run `make build`, then `npm publish`, then `make unbuild`.
+This command will lint the project files, run the tests, build the project, publish the build to NPM and then perform a `git push --follow-tags`.
 
 ```
+$ make release
+```
+
+A typical publish workflow might look something like this:
+
+```
+$ git checkout master
+$ git add .
+$ git commit -m "fixed a bug"
+$ npm version patch
 $ make release
 ```
 

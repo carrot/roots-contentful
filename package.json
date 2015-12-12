@@ -67,7 +67,7 @@
     "build": "babel src -d lib",
     "prerelease": "npm run build",
     "release": "npm publish",
-    "postrelease": "npm run unbuild",
+    "postpublish": "git push --follow-tags",
     "pretest": "npm run lint",
     "test": "mocha",
     "coverage": "babel-node ./node_modules/.bin/isparta cover _mocha",
