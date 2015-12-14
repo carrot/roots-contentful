@@ -1,6 +1,4 @@
-
 import _ from 'lodash'
-import W from 'when'
 import S from 'string'
 import path from 'path'
 import contentful from 'contentful'
@@ -31,7 +29,7 @@ export default class RootsContentful {
    */
   constructor (roots) {
     // set default locals
-    this.roots = roots
+    this.roots = roots || { config: {} }
     this.util = new RootsUtil(this.roots)
     this.roots.config.locals = this.roots.config.locals || {}
     this.roots.config.locals.contentful = this.roots.config.locals.contentful || {}
@@ -50,16 +48,21 @@ export default class RootsContentful {
     })
   }
 
-  setup () {
-    return configure_content(this.opts.content_types)
-      .with(this)
-      .then(get_all_content)
-      .tap(set_urls)
-      .then(transform_entries)
-      .then(sort_entries)
-      .tap(set_locals)
-      .tap(compile_entries)
-      .tap(write_entries)
+  /**
+   * Performs asynchronous setup tasks required
+   * for the extension to work
+   * @return {Promise} an array for the sorted contentful data
+   */
+  async setup () {
+    let configuration = await configure_content(this.opts.content_types)
+    let content = await get_all_content(configuration)
+    await set_urls(content)
+    let entries = await transform_entries(content)
+    let sorted = await sort_entries(entries)
+    await this::set_locals(sorted)
+    await this::compile_entries(sorted)
+    await this::write_entries(sorted)
+    return sorted
   }
 
 }
@@ -70,28 +73,23 @@ export default class RootsContentful {
  * @param {Array} types - content_types set in app.coffee extension config
  * @return {Promise} - returns an array of configured content types
  */
-function configure_content (types) {
-  if (_.isPlainObject(types)) {
+async function configure_content (types) {
+  // check if `types` is a plain object - if so, convert to array
+  if (types != null && !Array.isArray(types) && typeof types === 'object') {
     types = reconfigure_alt_type_config(types)
   }
-  return W.map(types, t => {
-    if (!t.id) {
-      return W.reject(errors.no_type_id)
+  types = await Promise.all(types)
+  return types.map(async type => {
+    if (!type.id) throw new Error(errors.no_type_id)
+    type.filters = type.filters || {}
+    if (!type.name || (type.template && !type.path)) {
+      let content_type = await client.contentType(type.id)
+      type.name = type.name || pluralize(S(content_type.name).toLowerCase().underscore().s)
+      if (type.template) {
+        type.path = type.path || (e => `${type.name}/${S(e[content_type.displayField]).slugify().s}`)
+      }
     }
-    t.filters = t.filters || {}
-    if (!t.name || (t.template && !t.path)) {
-      return W(
-        client.contentType(t.id)
-          .then(res => {
-            t.name = t.name || pluralize(S(res.name).toLowerCase().underscore().s)
-            if (t.template) {
-              t.path = t.path || (e => `${t.name}/${S(e[res.displayField]).slugify().s}`)
-            }
-            return t
-          })
-      )
-    }
-    return W.resolve(t)
+    return type
   })
 }
 
@@ -102,10 +100,10 @@ function configure_content (types) {
  * @return {Promise} - returns an array of content types
  */
 function reconfigure_alt_type_config (types) {
-  return _.reduce(types, (res, type, k) => {
-    type.name = k
-    res.push(type)
-    return res
+  return _.reduce(types, (results, type, key) => {
+    type.name = key
+    results.push(type)
+    return results
   }, [])
 }
 
@@ -114,12 +112,12 @@ function reconfigure_alt_type_config (types) {
  * @param {Array} types - configured content_type objects
  * @return {Promise} - returns formatted locals object with all content
  */
-function get_all_content (types) {
-  return W.map(types, t => {
-    return fetch_content(t)
-      .then(format_content)
-      .then(c => t.content = c)
-      .yield(t)
+async function get_all_content (types) {
+  types = await Promise.all(types)
+  return types.map(async type => {
+    let content = await fetch_content(type)
+    type.content = await format_content(content)
+    return type
   })
 }
 
@@ -128,13 +126,13 @@ function get_all_content (types) {
  * @param {Object} type - content type object
  * @return {Promise} - returns response from Contentful API
  */
-function fetch_content (type) {
-  return W(client.entries(
-    _.merge(type.filters, {
-      content_type: type.id,
-      include: 10
-    })
-  ))
+async function fetch_content (type) {
+  let entries = await client.entries({
+    ...type.filters,
+    content_type: type.id,
+    include: 10
+  })
+  return entries
 }
 
 /**
@@ -142,20 +140,23 @@ function fetch_content (type) {
  * @param {Object} content - entries API response for a content type
  * @return {Promise} - returns formatted content type entries object
  */
-function format_content (content) {
-  return W.map(content, format_entry)
+async function format_content (content) {
+  content = await Promise.all(content)
+  return content.map(format_entry)
 }
 
 /**
  * Formats a single entry object from Contentful API response
- * @param {Object} e - single entry object from API response
+ * @param {Object} entry - single entry object from API response
  * @return {Promise} - returns formatted entry object
  */
-function format_entry (e) {
-  if (_.has(e.fields, 'sys')) {
-    return W.reject(errors.sys_conflict)
+function format_entry (entry) {
+  if (entry.fields.sys != null) {
+    throw new Error(errors.sys_conflict)
   }
-  return _.assign(_.omit(e, 'fields'), e.fields)
+  let formatted = { ...entry, ...entry.fields }
+  delete formatted.fields
+  return formatted
 }
 
 /**
@@ -165,15 +166,16 @@ function format_entry (e) {
  * @param {Array} types - content type objects
  * @return {Promise} - promise when urls are set
  */
-function set_urls (types) {
-  return W.map(types, t => {
-    if (t.template) {
-      return W.map(t.content, entry => {
-        let paths = t.path(entry)
-        if (_.isString(paths)) {
+async function set_urls (types) {
+  types = await Promise.all(types)
+  return types.map(type => {
+    if (type.template) {
+      return type.content.map(entry => {
+        let paths = type.path(entry)
+        if (typeof paths === 'string') {
           paths = [paths]
         }
-        entry._urls = paths.map(p => `/${p}.html`)
+        entry._urls = paths.map(path => `/${path}.html`)
         entry._url = entry._urls.length === 1 ? entry._urls[0] : null
         return entry._url
       })
@@ -186,11 +188,11 @@ function set_urls (types) {
  * @param {Array} types - populated content type objects
  * @return {Promise} - promise for when complete
  */
-function set_locals (types) {
-  return W.map(types, t => {
-    this.roots.config.locals.contentful[t.name] = t.content
-    let ref = this.roots.config.locals.contentful[t.name]
-    return ref
+async function set_locals (types) {
+  types = await Promise.all(types)
+  return types.map(type => {
+    this.roots.config.locals.contentful[type.name] = type.content
+    return this.roots.config.locals.contentful[type.name]
   })
 }
 
@@ -199,14 +201,13 @@ function set_locals (types) {
  * @param {Array} types - Populated content type objects
  * @return {Promise} - promise for when compilation is finished
  */
-function transform_entries (types) {
-  return W.map(types, t => {
-    if (t.transform) {
-      W.map(t.content, entry => {
-        return W(entry, t.transform)
-      })
+async function transform_entries (types) {
+  types = await Promise.all(types)
+  return types.map(type => {
+    if (type.transform) {
+      type.content.map(entry => type.transform(entry))
     }
-    return W.resolve(t)
+    return type
   })
 }
 
@@ -215,14 +216,13 @@ function transform_entries (types) {
  * @param {Array} types - Populated content type objects
  * @return {Promise} - promise for when compilation is finished
  */
-function sort_entries (types) {
-  return W.map(types, t => {
-    if (t.sort) {
-      // in order to sort promises we have to resolve them first.
-      W.all(t.content)
-        .then(data => t.content = data.sort(t.sort))
+async function sort_entries (types) {
+  types = await Promise.all(types)
+  return types.map(type => {
+    if (type.sort) {
+      type.content = type.content.sort(type.sort)
     }
-    return W.resolve(t)
+    return type
   })
 }
 
@@ -231,22 +231,21 @@ function sort_entries (types) {
  * @param {Array} types - Populated content type objects
  * @return {Promise} - promise for when compilation is finished
  */
-function compile_entries (types) {
-  return W.map(types, t => {
-    if (!t.template) {
-      return W.resolve()
-    }
-    return W.map(t.content, entry => {
-      let template = path.join(this.roots.root, t.template)
-      let compiler = _.find(this.roots.config.compilers, c => {
-        return _.contains(c.extensions, path.extname(template).substring(1))
+async function compile_entries (types) {
+  types = await Promise.all(types)
+  return types.map(type => {
+    if (!type.template) return
+    return type.content.map(entry => {
+      let template = path.join(this.roots.root, type.template)
+      let compiler = _.find(this.roots.config.compilers, compiler => {
+        return compiler.extensions.includes(path.extname(template).substring(1))
       })
-      return W.map(entry._urls, url => {
-        this.roots.config.locals.entry = _.assign({}, entry, { _url: url })
+      return entry._urls.map(url => {
+        this.roots.config.locals.entry = { ...entry, _url: url }
         return compiler.renderFile(template, this.roots.config.locals)
-          .then(res => {
+          .then(compiled => {
             this.roots.config.locals.entry = null
-            return this.util.write(url, res.result)
+            return this.util.write(url, compiled.result)
           })
       })
     })
@@ -258,12 +257,11 @@ function compile_entries (types) {
  * @param {Array} types - Populated content type objects
  * @return {Promise} - promise for when compilation is finished
  */
-function write_entries (types) {
-  return W.map(types, t => {
-    if (!t.write) {
-      return W.resolve()
-    }
-    return this.util.write(t.write, JSON.stringify(t.content))
+async function write_entries (types) {
+  types = await Promise.all(types)
+  return types.map(type => {
+    if (!type.write) return
+    return this.util.write(type.write, JSON.stringify(type.content))
   })
 }
 

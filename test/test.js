@@ -6,6 +6,7 @@
   to the AVA test runner pending an update to support Babel 6.0.
  */
 
+import 'babel-polyfill'
 import chai from 'chai'
 import chai_promise from 'chai-as-promised'
 import mockery from 'mockery'

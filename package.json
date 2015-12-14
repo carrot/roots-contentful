@@ -7,17 +7,19 @@
     "url": "https://github.com/carrot/roots-contentful/issues"
   },
   "dependencies": {
+    "babel-polyfill": "^6.3.14",
+    "babel-runtime": "^6.3.13",
     "contentful": "^1.1.5",
     "lodash": "^3.10.1",
     "pluralize": "^1.2.1",
     "roots-util": "0.1.x",
-    "string": "^3.1.3",
-    "when": "3.7.x"
+    "string": "^3.1.3"
   },
   "devDependencies": {
     "ava": "^0.7.0",
     "babel-cli": "^6.3.15",
     "babel-eslint": "^4.1.6",
+    "babel-plugin-transform-runtime": "^6.3.13",
     "babel-preset-es2015": "^6.3.13",
     "babel-preset-stage-0": "^6.3.13",
     "babel-register": "^6.3.13",
@@ -40,6 +42,15 @@
   },
   "homepage": "https://github.com/carrot/roots-contentful",
   "keywords": [
+    "roots",
+    "contentful",
+    "content",
+    "dynamic",
+    "cms",
+    "management",
+    "system",
+    "extension",
+    "plugin",
     "roots-extension"
   ],
   "license": "MIT",
