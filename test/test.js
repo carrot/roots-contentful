@@ -13,7 +13,7 @@ import mockery from 'mockery'
 import path from 'path'
 import RootsUtil from 'roots-util'
 import Roots from 'roots'
-import S from 'string'
+import slugify from 'underscore.string/slugify'
 import W from 'when'
 import _ from 'lodash'
 
@@ -372,14 +372,14 @@ describe('single entry views', function () {
     })
     it('compiles a single entry file based off the slugified display field', function () {
       var p
-      p = path.join(this['public'], 'blog_posts/' + (S(this.title).slugify().s) + '.html')
+      p = path.join(this['public'], 'blog_posts/' + slugify(this.title) + '.html')
       h.file.exists(p).should.be.ok
       h.file.contains(p, this.title).should.be['true']
       return h.file.contains(p, this.body).should.be['true']
     })
     it('has access to other roots locals inside the single entry view', function () {
       var p
-      p = path.join(this['public'], 'blog_posts/' + (S(this.title).slugify().s) + '.html')
+      p = path.join(this['public'], 'blog_posts/' + slugify(this.title) + '.html')
       return h.file.contains(p, 'such local').should.be['true']
     })
     it('sets a _url attribute to allow links to each entry', function () {
@@ -424,7 +424,7 @@ describe('single entry views', function () {
     })
     return it("should not have first entry's content in second entries single view", function () {
       var p
-      p = path.join(this['public'], 'blog_posts/' + (S(this.title_2).slugify().s) + '.html')
+      p = path.join(this['public'], 'blog_posts/' + slugify(this.title_2) + '.html')
       return h.file.contains(p, this.body).should.not.be['true']
     })
   })
@@ -454,7 +454,7 @@ describe('single entry views', function () {
     })
     it('compiles a single entry file using custom path', function () {
       var output, p
-      output = 'blogging/' + this.category + '/' + (S(this.title).slugify().s) + '.html'
+      output = 'blogging/' + this.category + '/' + slugify(this.title) + '.html'
       p = path.join(this['public'], output)
       h.file.exists(p).should.be.ok
       h.file.contains(p, this.title).should.be['true']
@@ -503,7 +503,7 @@ describe('single entry views', function () {
           results1 = []
           for (k = 0, len1 = ref1.length; k < len1; k++) {
             i = ref1[k]
-            output = '/' + lang + '/' + (S(this.title[i]).slugify().s) + '.html'
+            output = '/' + lang + '/' + slugify(this.title[i]) + '.html'
             p = path.join(this['public'], output)
             h.file.exists(p).should.be.ok
             h.file.contains(p, this.title[i]).should.be['true']
@@ -528,7 +528,7 @@ describe('single entry views', function () {
           results1 = []
           for (k = 0, len1 = ref1.length; k < len1; k++) {
             i = ref1[k]
-            results1.push(h.file.contains(p, '/' + lang + '/' + (S(this.title[i]).slugify().s) + '.html').should.be['true'])
+            results1.push(h.file.contains(p, '/' + lang + '/' + slugify(this.title[i]) + '.html').should.be['true'])
           }
           return results1
         }.call(this))

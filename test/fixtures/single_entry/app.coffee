@@ -1,4 +1,3 @@
-S          = require 'string'
 contentful = require '../../../src'
 
 module.exports =

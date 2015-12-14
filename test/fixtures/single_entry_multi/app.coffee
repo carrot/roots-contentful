@@ -1,4 +1,4 @@
-S          = require 'string'
+slugify    = require 'underscore.string/slugify'
 contentful = require '../../../src'
 
 module.exports =
@@ -12,7 +12,7 @@ module.exports =
           id: '6BYT1gNiIEyIw8Og8aQAO6'
           name: 'blog_posts'
           template: 'views/_blog_post.jade'
-          path: (e) -> ("#{lang}/#{S(e.title).slugify().s}" for lang in ['en', 'fr'])
+          path: (e) -> ("#{lang}/#{slugify(e.title)}" for lang in ['en', 'fr'])
         }
       ]
     )

@@ -1,10 +1,11 @@
-import _ from 'lodash'
-import S from 'string'
 import path from 'path'
+import querystring from 'querystring'
+import _ from 'lodash'
 import contentful from 'contentful'
 import pluralize from 'pluralize'
+import slugify from 'underscore.string/slugify'
+import underscored from 'underscore.string/underscored'
 import RootsUtil from 'roots-util'
-import querystring from 'querystring'
 import errors from './errors'
 import hosts from './hosts'
 
@@ -84,9 +85,9 @@ async function configure_content (types) {
     type.filters = type.filters || {}
     if (!type.name || (type.template && !type.path)) {
       let content_type = await client.contentType(type.id)
-      type.name = type.name || pluralize(S(content_type.name).toLowerCase().underscore().s)
+      type.name = type.name || pluralize(underscored(content_type.name))
       if (type.template) {
-        type.path = type.path || (e => `${type.name}/${S(e[content_type.displayField]).slugify().s}`)
+        type.path = type.path || (entry => `${type.name}/${slugify(entry[content_type.displayField])}`)
       }
     }
     return type
