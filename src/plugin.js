@@ -1,6 +1,5 @@
 import path from 'path'
 import querystring from 'querystring'
-import _ from 'lodash'
 import contentful from 'contentful'
 import pluralize from 'pluralize'
 import slugify from 'underscore.string/slugify'
@@ -8,6 +7,7 @@ import underscored from 'underscore.string/underscored'
 import RootsUtil from 'roots-util'
 import errors from './errors'
 import hosts from './hosts'
+import is_plain_object from './util/is-plain-object'
 
 let client = null // init contentful client
 
@@ -30,7 +30,7 @@ export default class RootsContentful {
    */
   constructor (roots) {
     // set default locals
-    this.roots = roots || { config: {} }
+    this.roots = roots
     this.util = new RootsUtil(this.roots)
     this.roots.config.locals = this.roots.config.locals || {}
     this.roots.config.locals.contentful = this.roots.config.locals.contentful || {}
@@ -75,19 +75,18 @@ export default class RootsContentful {
  * @return {Promise} - returns an array of configured content types
  */
 async function configure_content (types) {
-  // check if `types` is a plain object - if so, convert to array
-  if (types != null && !Array.isArray(types) && typeof types === 'object') {
-    types = reconfigure_alt_type_config(types)
+  if (is_plain_object(types)) {
+    types = convert_types_to_array(types)
   }
-  types = await Promise.all(types)
   return types.map(async type => {
-    if (!type.id) throw new Error(errors.no_type_id)
-    type.filters = type.filters || {}
-    if (!type.name || (type.template && !type.path)) {
-      let content_type = await client.contentType(type.id)
-      type.name = type.name || pluralize(underscored(content_type.name))
-      if (type.template) {
-        type.path = type.path || (entry => `${type.name}/${slugify(entry[content_type.displayField])}`)
+    const { id, name, filters, template, path } = type
+    if (!id) throw new Error(errors.no_type_id)
+    type.filters = filters || {}
+    if (!name || (template && !path)) {
+      let content_type = await client.contentType(id)
+      type.name = name || pluralize(underscored(content_type.name))
+      if (template) {
+        type.path = path || (entry => `${name}/${slugify(entry[content_type.displayField])}`)
       }
     }
     return type
@@ -100,10 +99,9 @@ async function configure_content (types) {
  * @param {Object} types - content_types set in app.coffee extension config
  * @return {Promise} - returns an array of content types
  */
-function reconfigure_alt_type_config (types) {
-  return _.reduce(types, (results, type, key) => {
-    type.name = key
-    results.push(type)
+function convert_types_to_array (types) {
+  return Object.keys(types).reduce((results, key) => {
+    results.push({ ...types[key], name: key })
     return results
   }, [])
 }
@@ -127,10 +125,10 @@ async function get_all_content (types) {
  * @param {Object} type - content type object
  * @return {Promise} - returns response from Contentful API
  */
-async function fetch_content (type) {
+async function fetch_content ({ id, filters }) {
   let entries = await client.entries({
-    ...type.filters,
-    content_type: type.id,
+    ...filters,
+    content_type: id,
     include: 10
   })
   return entries
@@ -169,10 +167,10 @@ function format_entry (entry) {
  */
 async function set_urls (types) {
   types = await Promise.all(types)
-  return types.map(type => {
-    if (type.template) {
-      return type.content.map(entry => {
-        let paths = type.path(entry)
+  return types.map(({ template, content, path }) => {
+    if (template) {
+      return content.map(entry => {
+        let paths = path(entry)
         if (typeof paths === 'string') {
           paths = [paths]
         }
@@ -191,9 +189,9 @@ async function set_urls (types) {
  */
 async function set_locals (types) {
   types = await Promise.all(types)
-  return types.map(type => {
-    this.roots.config.locals.contentful[type.name] = type.content
-    return this.roots.config.locals.contentful[type.name]
+  return types.map(({ name, content }) => {
+    this.roots.config.locals.contentful[name] = content
+    return content
   })
 }
 
@@ -205,8 +203,9 @@ async function set_locals (types) {
 async function transform_entries (types) {
   types = await Promise.all(types)
   return types.map(type => {
-    if (type.transform) {
-      type.content.map(entry => type.transform(entry))
+    const { transform, content } = type
+    if (transform) {
+      content.forEach(transform)
     }
     return type
   })
@@ -220,8 +219,9 @@ async function transform_entries (types) {
 async function sort_entries (types) {
   types = await Promise.all(types)
   return types.map(type => {
-    if (type.sort) {
-      type.content = type.content.sort(type.sort)
+    const { sort, content } = type
+    if (sort) {
+      type.content = content.sort(sort)
     }
     return type
   })
@@ -233,20 +233,21 @@ async function sort_entries (types) {
  * @return {Promise} - promise for when compilation is finished
  */
 async function compile_entries (types) {
+  const { util, roots: { root, config: { compilers, locals } } } = this
   types = await Promise.all(types)
-  return types.map(type => {
-    if (!type.template) return
-    return type.content.map(entry => {
-      let template = path.join(this.roots.root, type.template)
-      let compiler = _.find(this.roots.config.compilers, compiler => {
-        return compiler.extensions.includes(path.extname(template).substring(1))
+  return types.map(({ template, content }) => {
+    if (!template) return
+    return content.map(entry => {
+      let tpl_path = path.join(root, template)
+      let compiler = Object.values(compilers).find(compiler => {
+        return compiler.extensions.includes(path.extname(tpl_path).substring(1))
       })
-      return entry._urls.map(url => {
-        this.roots.config.locals.entry = { ...entry, _url: url }
-        return compiler.renderFile(template, this.roots.config.locals)
+      return entry._urls.map(_url => {
+        this.roots.config.locals.entry = { ...entry, _url }
+        return compiler.renderFile(tpl_path, locals)
           .then(compiled => {
             this.roots.config.locals.entry = null
-            return this.util.write(url, compiled.result)
+            return util.write(_url, compiled.result)
           })
       })
     })
@@ -260,9 +261,9 @@ async function compile_entries (types) {
  */
 async function write_entries (types) {
   types = await Promise.all(types)
-  return types.map(type => {
-    if (!type.write) return
-    return this.util.write(type.write, JSON.stringify(type.content))
+  return types.map(({ write, content }) => {
+    if (!write) return
+    return this.util.write(write, JSON.stringify(content))
   })
 }
 

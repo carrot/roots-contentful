@@ -10,7 +10,6 @@
     "babel-polyfill": "^6.3.14",
     "babel-runtime": "^6.3.13",
     "contentful": "^1.1.5",
-    "lodash": "^3.10.1",
     "pluralize": "^1.2.1",
     "roots-util": "0.1.x",
     "underscore.string": "^3.2.2"
@@ -30,6 +29,7 @@
     "husky": "^0.10.2",
     "isparta": "^4.0.0",
     "istanbul": "0.4.1",
+    "lodash": "^3.10.1",
     "mocha": "2.3.4",
     "mockery": "1.4.x",
     "roots": "3.1.0",
