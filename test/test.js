@@ -167,6 +167,22 @@ describe('basic compile', function () {
     h.file.contains(p, this.title).should.be['true']
     return h.file.contains(p, this.body).should.be['true']
   })
+  it('compiles multiple times including watch', async function () {
+    var project = new Roots(path.join(_path, 'basic'))
+    var watcher = null
+    project.on('error', function (e) {
+      throw new Error(e)
+    })
+    project.on('done', function () {
+      var p = path.join(this['public'], 'index.html')
+      h.file.contains(p, this.title).should.be['true']
+      h.file.contains(p, this.body).should.be['true']
+      if (watcher != null) {
+        watcher.close()
+      }
+    }.bind(this))
+    watcher = await project.watch()
+  })
   return after(function () {
     return unmock_contentful()
   })

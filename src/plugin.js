@@ -18,7 +18,7 @@ export default class RootsContentful {
 
   opts = {
     /* defaults */
-
+    cache: true,
     /* user-provided */
     ...RootsContentful.opts
   }
@@ -55,7 +55,13 @@ export default class RootsContentful {
    * @return {Promise} an array for the sorted contentful data
    */
   async setup () {
-    let configuration = await configure_content(this.opts.content_types)
+    const { opts: { cache, content_types } } = this
+    const locals = this.roots.config.locals.contentful
+    // return cached locals if possible
+    if (cache && Object.keys(locals).length) {
+      return locals
+    }
+    let configuration = await configure_content(content_types)
     let content = await get_all_content(configuration)
     await set_urls(content)
     let entries = await transform_entries(content)
