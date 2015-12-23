@@ -139,6 +139,8 @@ describe('contentful content type fields', function () {
 })
 
 describe('basic compile', function () {
+  var project = new Roots(path.join(_path, 'basic'))
+  var util = new RootsUtil(project)
   before(function (done) {
     this.title = 'Throw Some Ds'
     this.body = 'Rich Boy selling crick'
@@ -152,6 +154,7 @@ describe('basic compile', function () {
         }
       ]
     })
+    util.write('../about.jade', 'h1 wow')
     return compile_fixture.call(this, 'basic').then(function () {
       return done()
     })['catch'](done)
@@ -168,22 +171,54 @@ describe('basic compile', function () {
     return h.file.contains(p, this.body).should.be['true']
   })
   it('compiles multiple times including watch', async function () {
-    var project = new Roots(path.join(_path, 'basic'))
-    var watcher = null
-    project.on('error', function (e) {
-      throw new Error(e)
-    })
-    project.on('done', function () {
-      var p = path.join(this['public'], 'index.html')
-      h.file.contains(p, this.title).should.be['true']
-      h.file.contains(p, this.body).should.be['true']
-      if (watcher != null) {
-        watcher.close()
-      }
-    }.bind(this))
-    watcher = await project.watch()
+    var index = path.join(this['public'], 'index.html')
+    var about = path.join(this['public'], 'about.html')
+
+    console.log('starting watcher')
+    var watcher = await project.watch()
+
+    console.log('compile 1')
+    h.file.contains(index, this.title).should.be['true']
+    h.file.contains(index, this.body).should.be['true']
+
+    console.log('modifying fixture')
+    await util.write('../about.jade', 'h1 Chuck some Ds\nh2 Wealthy lad peddling crick')
+
+    console.log('verifying changes')
+    h.file.contains(about, 'Chuck some Ds').should.be['true']
+    h.file.contains(about, 'Wealthy lad peddling crick').should.be['true']
+
+    console.log('closing watcher')
+    watcher.close()
+    console.log('watcher closed')
+
+    // var watcher = null
+    // var second_compile = false
+    // project.on('done', async function () {
+    //   var p = path.join(this['public'], 'index.html')
+    //   if (!second_compile) {
+    //     console.log('compile 1')
+    //     h.file.contains(p, this.title).should.be['true']
+    //     h.file.contains(p, this.body).should.be['true']
+    //     second_compile = true
+    //   } else {
+    //     console.log('compile 2')
+    //     h.file.contains(p, 'Chuck some Ds').should.be['true']
+    //     h.file.contains(p, 'Wealthy lad peddling crick').should.be['true']
+    //     console.log(watcher)
+    //     if (watcher != null) {
+    //       await watcher.close()
+    //       console.log('watcher closed')
+    //     }
+    //   }
+    // }.bind(this))
+    // watcher = await project.watch()
+    // console.log('watcher opened')
+    // console.log(watcher)
+    // await util.write('../about.jade', 'h1 Chuck some Ds\nh2 Wealthy lad peddling crick')
   })
   return after(function () {
+    util.write('../about.jade', 'h1 wow')
     return unmock_contentful()
   })
 })
