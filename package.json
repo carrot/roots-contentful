@@ -21,8 +21,10 @@
     "babel-preset-es2015-node5": "^1.1.1",
     "babel-preset-stage-0": "^6.3.13",
     "coffee-script": "^1.10.0",
+    "coveralls": "^2.11.6",
     "husky": "^0.10.2",
     "mockery": "1.4.x",
+    "nyc": "^5.2.0",
     "roots": "3.1.0",
     "snazzy": "^2.0.1",
     "standard": "^5.4.1"
@@ -56,8 +58,8 @@
   },
   "scripts": {
     "build": "babel src -d lib",
-    "coverage": "babel-node ./node_modules/.bin/isparta cover _mocha",
-    "coveralls": "coveralls < coverage/lcov.info",
+    "precoverage": "nyc npm test",
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
     "lint": "standard --verbose | snazzy",
     "postpublish": "git push --follow-tags",
     "prebuild": "npm test",
@@ -66,7 +68,7 @@
     "prerelease": "npm run build",
     "pretest": "npm run lint -s",
     "release": "npm publish",
-    "test": "ava --require babel-core/register --require coffee-script/register"
+    "test": "nyc ava --require babel-core/register --require coffee-script/register"
   },
   "standard": {
     "parser": "babel-eslint",

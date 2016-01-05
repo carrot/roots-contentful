@@ -12,3 +12,4 @@ lib-cov
 .grunt
 .lock-wscript
 build/Release
+.nyc_output

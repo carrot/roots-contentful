@@ -6,3 +6,4 @@ src
 .babelrc
 wallaby.js
 Makefile
+.nyc_output
