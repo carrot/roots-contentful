@@ -1,5 +1,5 @@
 {
   "presets": ["es2015-node5", "stage-0"],
-  "plugins": ["add-module-exports"],
+  "plugins": ["add-module-exports", "transform-runtime"],
   "sourceMaps": "inline"
 }
