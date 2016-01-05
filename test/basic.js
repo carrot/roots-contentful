@@ -1,5 +1,4 @@
 import test from 'ava'
-import 'babel-register'
 import helpers from './_helpers'
 import {
   mock_contentful,
