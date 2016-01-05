@@ -3,7 +3,7 @@ import Roots from 'roots'
 import helpers from './_helpers'
 
 export async function compile_fixture (name) {
-  this.context.public = `${name}/public`
+  this.public_dir = `${name}/public`
   return await helpers.project.compile(Roots, name)
 }
 

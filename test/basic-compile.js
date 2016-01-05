@@ -6,24 +6,32 @@ import {
   compile_fixture
 } from './_setup'
 
+let ctx = {}
+
 test.cb.before(t => {
   helpers.project.install_dependencies('*', t.end)
 })
 
-test.beforeEach(async t => {
+test.before(async t => {
   let title = 'Throw Some Ds'
   let body = 'Rich Boy selling crick'
-  t.context = { ...t.context, title, body }
+  ctx = { ...ctx, title, body }
   mock_contentful({
     entries: [{
       fields: { title, body }
     }]
   })
-  await t::compile_fixture('basic')
+  await ctx::compile_fixture('basic')
+  ctx.index_path = `${ctx.public_dir}/index.html`
 })
 
 test('compiles basic project', t => {
-  t.ok(helpers.file.exists(`${t.context.public}/index.html`))
+  t.ok(helpers.file.exists(ctx.index_path))
+})
+
+test('has contentful data available in views', t => {
+  t.true(helpers.file.contains(ctx.index_path, ctx.title))
+  t.true(helpers.file.contains(ctx.index_path, ctx.body))
 })
 
 test.after(async t => {
