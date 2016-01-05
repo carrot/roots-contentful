@@ -7,7 +7,6 @@
     "url": "https://github.com/carrot/roots-contentful/issues"
   },
   "dependencies": {
-    "babel-polyfill": "^6.3.14",
     "babel-runtime": "^6.3.13",
     "contentful": "^1.1.5",
     "pluralize": "^1.2.1",
@@ -15,51 +14,59 @@
     "underscore.string": "^3.2.2"
   },
   "devDependencies": {
-    "ava": "github:sindresorhus/ava",
+    "ava": "sindresorhus/ava#65ae07c",
     "babel-cli": "^6.3.15",
+    "babel-core": "^6.3.26",
     "babel-eslint": "^4.1.6",
-    "babel-plugin-transform-runtime": "^6.3.13",
-    "babel-preset-es2015": "^6.3.13",
     "babel-preset-es2015-node5": "^1.1.1",
     "babel-preset-stage-0": "^6.3.13",
-    "babel-register": "^6.3.13",
-    "chai": "3.4.1",
-    "chai-as-promised": "5.1.0",
-    "coffee-script": "1.10.0",
-    "coveralls": "2.x",
+    "coffee-script": "^1.10.0",
     "husky": "^0.10.2",
-    "isparta": "^4.0.0",
-    "istanbul": "0.4.1",
-    "lodash": "^3.10.1",
-    "mocha": "2.3.4",
     "mockery": "1.4.x",
     "roots": "3.1.0",
     "snazzy": "^2.0.1",
-    "standard": "^5.4.1",
-    "when": "^3.7.5"
+    "standard": "^5.4.1"
   },
   "directories": {
     "lib": "lib",
     "test": "test"
   },
+  "engines": {
+    "node": ">=5.0.0",
+    "npm": ">=3.0.0"
+  },
   "homepage": "https://github.com/carrot/roots-contentful",
   "keywords": [
-    "roots",
-    "contentful",
-    "content",
-    "dynamic",
     "cms",
-    "management",
-    "system",
+    "content",
+    "contentful",
+    "dynamic",
     "extension",
+    "management",
     "plugin",
-    "roots-extension"
+    "roots",
+    "roots-extension",
+    "system"
   ],
   "license": "MIT",
   "main": "lib",
   "repository": {
     "type": "git",
     "url": "https://github.com/carrot/roots-contentful.git"
+  },
+  "scripts": {
+    "build": "babel src -d lib",
+    "coverage": "babel-node ./node_modules/.bin/isparta cover _mocha",
+    "coveralls": "coveralls < coverage/lcov.info",
+    "lint": "standard --verbose | snazzy",
+    "postpublish": "git push --follow-tags",
+    "prebuild": "npm test",
+    "precommit": "npm run lint -s",
+    "precoveralls": "npm run coverage",
+    "prerelease": "npm run build",
+    "pretest": "npm run lint -s",
+    "release": "npm publish",
+    "test": "ava --require babel-core/register --require coffee-script/register"
   },
   "standard": {
     "parser": "babel-eslint",
@@ -71,20 +78,5 @@
       "beforeAll",
       "afterAll"
     ]
-  },
-  "scripts": {
-    "precommit": "npm run lint",
-    "prepush": "npm run lint",
-    "lint": "standard --verbose | snazzy",
-    "prebuild": "npm test",
-    "build": "babel src -d lib",
-    "prerelease": "npm run build",
-    "release": "npm publish",
-    "postpublish": "git push --follow-tags",
-    "pretest": "npm run lint",
-    "test": "ava",
-    "coverage": "babel-node ./node_modules/.bin/isparta cover _mocha",
-    "precoveralls": "npm run coverage",
-    "coveralls": "coveralls < coverage/lcov.info"
   }
 }
