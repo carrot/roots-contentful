@@ -1,4 +1,4 @@
-import RootsContentful from './plugin'
+import RootsContentful from './extension'
 import errors from './errors'
 
 /**
@@ -21,12 +21,7 @@ function validate (opts) {
  * @param {Object} opts - user-supplied settings
  * @return {Function} - the extension class
  */
-function extension (opts) {
+export default function extension (opts) {
   RootsContentful.opts = validate(opts)
   return RootsContentful
 }
-
-// we need to explicitly use
-// module.exports since we're
-// targeting CommonJS, not ES6 Modules.
-module.exports = extension
