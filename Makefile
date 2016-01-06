@@ -12,3 +12,9 @@ release:
 
 lint:
 	npm run lint
+
+debug-test:
+	npm run debug-test
+
+test::
+	npm test
