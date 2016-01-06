@@ -63,7 +63,7 @@
     "build": "babel src -d lib",
     "coverage": "nyc report --reporter=lcov",
     "coveralls": "coveralls < coverage/lcov.info",
-    "debug-test": "npm run test -- --serial --verbose --fail-fast",
+    "debug-test": "NODE_DEBUG=request npm run test -- --serial --verbose --fail-fast",
     "lint": "standard --verbose | snazzy",
     "postpublish": "git push --follow-tags",
     "posttest": "babel-node ./test/_teardown.js",
