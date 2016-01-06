@@ -66,17 +66,18 @@
     "debug-test": "NODE_DEBUG=request npm run test -- --serial --verbose --fail-fast",
     "lint": "standard --verbose | snazzy",
     "postpublish": "git push --follow-tags",
-    "posttest": "babel-node ./test/_teardown.js",
+    "posttest": "node test/_teardown.js",
     "prebuild": "npm test",
     "precommit": "npm run lint -s",
     "precoverage": "nyc npm test",
     "precoveralls": "npm run coverage",
     "prerelease": "npm run build",
-    "pretest": "npm run lint -s && babel-node ./test/_setup.js",
+    "pretest": "npm run lint -s && node test/_setup.js",
     "release": "npm publish",
     "test": "nyc ava --require babel-core/register --require coffee-script/register"
   },
   "standard": {
-    "parser": "babel-eslint"
+    "parser": "babel-eslint",
+    "ignore": ["test/_setup.js", "test/_teardown.js"]
   }
 }
