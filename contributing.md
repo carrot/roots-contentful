@@ -1,5 +1,5 @@
 
-# Contributing to Roots-contentful
+# Contributing to `roots-contentful`
 
 Hello there! First of all, thanks for being interested in this project and helping out. We all think you are awesome, and by contributing to open source projects, you are making the world a better place. That being said, there are a few ways to make the process of contributing code to this project smoother, detailed below:
 
@@ -14,9 +14,9 @@ If you are opening an issue about a bug, make sure that you include clear steps 
 - Run `npm install`
 - Put in work
 
-### `pre-push`, `pre-commit` Linting
+### `pre-commit` Linting
 
-Provided dependencies are installed, `git push` and `git commit` will
+Provided dependencies are installed, `git commit` will
 not work unless this project passes a linting check.
 
 ### Build Commands
@@ -26,32 +26,35 @@ not work unless this project passes a linting check.
 
 #### Testing
 
-This project is constantly evolving, and to ensure that things are secure and working for everyone, we need to have tests. If you are adding a new feature, please make sure to add a test for it. The test suite for this project uses [mocha](http://visionmedia.github.io/mocha/) and [chai](http://chaijs.com/)
+This project is constantly evolving, and to ensure that things are secure and working for everyone, we need to have tests. If you are adding a new feature, please make sure to add a test for it. The test suite for this project uses [AVA](https://github.com/sindresorhus/ava).
 
 To lint the source:
 
-```
+```shell
 $ make lint
 ```
 
 To lint the source and run the tests:
 
-```bash
-$ npm test
-# or, for optional request logging:
-$ NODE_DEBUG=request npm test
+```shell
+$ make test
 ```
 
+By default, tests will run concurrently/in parallel. When debugging, this can sometimes lead to unwanted behavior. For this reason, there is a `debug-test` command that will fail as soon as the first test fails, run tests serially, enable more verbose output and also log any HTTP requests:
+
+```shell
+$ make debug-test
+```
 
 To create a coverage report:
 
-```
+```shell
 $ make coverage
 ```
 
 To feed a coverage report to coveralls:
 
-```
+```shell
 $ make coveralls
 ```
 
@@ -62,7 +65,7 @@ $ make coveralls
 Building involves compiling the ES2016 syntax down to
 regular ES5 using [Babel](http://babeljs.io). This command will run the tests - on success it will then compile the contents of `src/` into `lib/`.
 
-```
+```shell
 $ make build
 ```
 
@@ -70,16 +73,19 @@ $ make build
 
 This command will lint the project files, run the tests, build the project, publish the build to NPM and then perform a `git push --follow-tags`.
 
-```
+```shell
 $ make release
 ```
 
 A typical publish workflow might look something like this:
 
-```
-$ git checkout master
+```shell
+$ git checkout Fix/bug-fix
+# add some code...
 $ git add .
 $ git commit -m "fixed a bug"
+$ git checkout master
+$ git merge Fix/bug-fix
 $ npm version patch
 $ make release
 ```
