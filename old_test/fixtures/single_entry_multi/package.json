@@ -1,7 +1,0 @@
-{
-  "name": "test",
-  "dependencies": {
-    "jade": "*",
-    "underscore.string": "*"
-  }
-}
