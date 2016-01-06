@@ -1,3 +1,0 @@
---reporter spec
---compilers js:babel-register,coffee:coffee-script/register
---timeout 90000

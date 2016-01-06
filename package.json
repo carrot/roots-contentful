@@ -61,27 +61,22 @@
   },
   "scripts": {
     "build": "babel src -d lib",
-    "precoverage": "nyc npm test",
-    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "coverage": "nyc report --reporter=lcov",
+    "coveralls": "coveralls < coverage/lcov.info",
+    "debug-test": "npm run test -- --serial --verbose --fail-fast",
     "lint": "standard --verbose | snazzy",
     "postpublish": "git push --follow-tags",
+    "posttest": "babel-node ./test/_teardown.js",
     "prebuild": "npm test",
     "precommit": "npm run lint -s",
+    "precoverage": "nyc npm test",
     "precoveralls": "npm run coverage",
     "prerelease": "npm run build",
-    "pretest": "npm run lint -s",
+    "pretest": "npm run lint -s && babel-node ./test/_setup.js",
     "release": "npm publish",
     "test": "nyc ava --require babel-core/register --require coffee-script/register"
   },
   "standard": {
-    "parser": "babel-eslint",
-    "globals": [
-      "describe",
-      "it",
-      "before",
-      "after",
-      "beforeAll",
-      "afterAll"
-    ]
+    "parser": "babel-eslint"
   }
 }
