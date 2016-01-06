@@ -13,3 +13,4 @@ lib-cov
 .lock-wscript
 build/Release
 .nyc_output
+test/fixtures/*/public

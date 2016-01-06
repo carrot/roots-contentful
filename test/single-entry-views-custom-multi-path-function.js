@@ -1,18 +1,14 @@
 import path from 'path'
-import test from 'ava'
 import slugify from 'underscore.string/slugify'
-import helpers from './_helpers'
 import {
+  test,
+  helpers,
   mock_contentful,
   unmock_contentful,
   compile_fixture
-} from './_setup'
+} from './_helpers'
 
 let ctx = {}
-
-test.cb.before(t => {
-  helpers.project.install_dependencies('*', t.end)
-})
 
 test.before(async t => {
   let titles = ['Real Talk', 'Fake Talk']
@@ -56,5 +52,4 @@ test("sets _urls attribute to all of the entry's compiled files", t => {
 
 test.after(async t => {
   unmock_contentful()
-  await helpers.project.remove_folders('**/public')
 })

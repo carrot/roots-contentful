@@ -1,16 +1,12 @@
-import test from 'ava'
-import helpers from './_helpers'
 import {
+  test,
+  helpers,
   mock_contentful,
   unmock_contentful,
   compile_fixture
-} from './_setup'
+} from './_helpers'
 
 let ctx = {}
-
-test.cb.before(t => {
-  helpers.project.install_dependencies('*', t.end)
-})
 
 test.before(async t => {
   let title = 'Gatorade'
@@ -40,5 +36,4 @@ test('allows the content type name to be set through a k/v object config', async
 
 test.after(async t => {
   unmock_contentful()
-  await helpers.project.remove_folders('**/public')
 })
