@@ -2,6 +2,18 @@ import mockery from 'mockery'
 import Roots from 'roots'
 import helpers from './_helpers'
 
+// polyfill array includes because of
+// https://github.com/sindresorhus/ava/issues/263
+/* eslint-disable */
+Array.prototype.includes = do {
+  typeof Array.prototype.includes === 'function'
+    ? Array.prototype.includes
+    : function includes (needle) {
+      return this.indexOf(needle) > -1
+    }
+}
+/* eslint-enable */
+
 export async function compile_fixture (name) {
   this.public_dir = `${name}/public`
   return await helpers.project.compile(Roots, name)
