@@ -1,7 +1,7 @@
 import path from 'path'
 import slugify from 'underscore.string/slugify'
+import test from 'ava'
 import {
-  test,
   helpers,
   mock_contentful,
   unmock_contentful,

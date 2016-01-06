@@ -2,7 +2,6 @@ import path from 'path'
 import mockery from 'mockery'
 import Roots from 'roots'
 import RootsUtil from 'roots-util'
-import ava from 'ava'
 
 // polyfill array includes because of
 // https://github.com/sindresorhus/ava/issues/263
@@ -15,8 +14,6 @@ Array.prototype.includes = do {
     }
 }
 /* eslint-enable */
-
-export const test = ava
 
 export const helpers = new RootsUtil.Helpers({
   base: path.join(__dirname, './fixtures')

@@ -1,5 +1,5 @@
+import test from 'ava'
 import {
-  test,
   helpers,
   mock_contentful,
   unmock_contentful,
