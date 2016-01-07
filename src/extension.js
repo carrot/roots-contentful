@@ -64,6 +64,7 @@ export default class RootsContentful {
     let configuration = await configure_content(content_types)
     let content = await get_all_content(configuration)
     await set_urls(content)
+    await set_reference_urls(content)
     let entries = await transform_entries(content)
     let sorted = await sort_entries(entries)
     await this::set_locals(sorted)
@@ -177,15 +178,60 @@ async function set_urls (types) {
     if (template) {
       return content.map(entry => {
         let paths = path(entry)
-        if (typeof paths === 'string') {
-          paths = [paths]
-        }
-        entry._urls = paths.map(path => `/${path}.html`)
-        entry._url = entry._urls.length === 1 ? entry._urls[0] : null
+        entry = set_entry_url(paths, entry)
         return entry._url
       })
     }
   })
+}
+
+/**
+ * Checks content with single entry views for references to other content_types
+ * When present, sets `_url` and `_urls` properties on referenced entries
+ * `_url` takes the value `null` if the content type's custom path function
+ * returns multiple paths
+ * @param {Array} types - content type objects
+ * @return {Promise} - promise when urls are set
+ */
+async function set_reference_urls (types) {
+  let pathFns = {}
+  types = await Promise.all(types)
+  types.forEach((t) => {
+    if (t.path) {
+      pathFns[t.name] = { path: t.path }
+    }
+  })
+  return types.map(({ template, content }) => {
+    if (template) {
+      let typeNames = Object.keys(pathFns)
+      return content.map(entry => {
+        return typeNames.forEach((name) => {
+          if (entry[name]) {
+            let paths = pathFns[name].path(entry.fields)
+            entry = set_entry_url(paths, entry.fields)
+            return entry
+          }
+        })
+      })
+    }
+  })
+}
+
+/**
+ * Sets `_url` and `_urls` properties on single entry views
+ * `_url` takes the value `null` if the content type's custom path function
+ * returns multiple paths
+ * @param {String} paths - String or Array of Strings of paths to assign
+ * @param {Object} entry - entry or entry.fields object to be assigned _urls
+ * @return {Object} - entry object
+ */
+function set_entry_url (paths, entry) {
+  if (typeof paths === 'string') {
+    paths = [paths]
+  }
+  entry._urls = paths.map(path => `/${path}.html`)
+  entry._url = entry._urls.length === 1 ? entry._urls[0] : null
+  return entry
 }
 
 /**
