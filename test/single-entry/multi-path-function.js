@@ -6,7 +6,7 @@ import {
   mock_contentful,
   unmock_contentful,
   compile_fixture
-} from './_helpers'
+} from '../helpers'
 
 let ctx = {}
 
@@ -23,7 +23,7 @@ test.before(async t => {
     })),
     content_type: { name: 'Blog Post', displayField: 'title' }
   })
-  await ctx::compile_fixture('single_entry_multi')
+  await ctx::compile_fixture('single-entry--multi-path-function')
   ctx.index_path = `${ctx.public_dir}/index.html`
 })
 

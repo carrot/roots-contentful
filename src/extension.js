@@ -21,7 +21,7 @@ export default class RootsContentful {
     cache: true,
     /* user-provided */
     ...RootsContentful.opts
-  }
+  };
 
   /**
    * @constructs RootsContentful

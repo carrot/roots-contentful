@@ -5,7 +5,7 @@ import {
   mock_contentful,
   unmock_contentful,
   compile_fixture
-} from './_helpers'
+} from './helpers'
 
 let ctx = {}
 
@@ -21,15 +21,15 @@ test.before(async t => {
 })
 
 test('should throw an error when missing an access token', async t => {
-  t.throws(ctx::compile_fixture('missing_token'), errors.no_token)
+  t.throws(ctx::compile_fixture('config--missing-token'), errors.no_token)
 })
 
 test('should throw an error without content type id', async t => {
-  t.throws(ctx::compile_fixture('missing_config'), errors.no_type_id)
+  t.throws(ctx::compile_fixture('config--missing-config'), errors.no_type_id)
 })
 
 test('allows the content type name to be set through a k/v object config', async t => {
-  await ctx::compile_fixture('alt-content-type-config')
+  await ctx::compile_fixture('config--alternative-type')
   ctx.index_path = `${ctx.public_dir}/index.html`
   t.true(helpers.file.contains(ctx.index_path, ctx.title))
   t.true(helpers.file.contains(ctx.index_path, ctx.body))

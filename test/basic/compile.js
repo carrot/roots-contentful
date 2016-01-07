@@ -4,24 +4,28 @@ import {
   mock_contentful,
   unmock_contentful,
   compile_fixture
-} from './_helpers'
+} from '../helpers'
 
 let ctx = {}
 
 test.before(async t => {
   let title = 'Throw Some Ds'
-  let body = 'Rich Boy selling crack'
+  let body = 'Rich Boy selling crick'
   ctx = { ...ctx, title, body }
   mock_contentful({
     entries: [{
       fields: { title, body }
     }]
   })
-  await ctx::compile_fixture('custom_name')
+  await ctx::compile_fixture('basic--compile')
   ctx.index_path = `${ctx.public_dir}/index.html`
 })
 
-test('has contentful data available in views under a custom name', t => {
+test('compiles basic project', t => {
+  t.ok(helpers.file.exists(ctx.index_path))
+})
+
+test('has contentful data available in views', t => {
   t.true(helpers.file.contains(ctx.index_path, ctx.title))
   t.true(helpers.file.contains(ctx.index_path, ctx.body))
 })
