@@ -20,11 +20,17 @@ test.before(async t => {
 })
 
 test('should throw an error when missing an access token', async t => {
-  t.throws(ctx::compile_fixture('missing_token'))
+  t.throws(
+    ctx::compile_fixture('missing_token'),
+    'Missing required options for roots-contentful. Please ensure `access_token` and `space_id` are present.'
+  )
 })
 
 test('should throw an error without content type id', async t => {
-  t.throws(ctx::compile_fixture('missing_config'))
+  t.throws(
+    ctx::compile_fixture('missing_config'),
+    'One or more of your content types is missing an `id` value'
+  )
 })
 
 test('allows the content type name to be set through a k/v object config', async t => {
