@@ -1,7 +1,7 @@
 build:
 	npm run build
 
-coverage:
+coverage::
 	npm run coverage
 
 coveralls:

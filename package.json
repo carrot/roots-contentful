@@ -69,7 +69,7 @@
     "posttest": "node test/_teardown.js",
     "prebuild": "npm test",
     "precommit": "npm run lint -s",
-    "precoverage": "nyc npm test",
+    "precoverage": "npm run test",
     "precoveralls": "npm run coverage",
     "prerelease": "npm run build",
     "pretest": "npm run lint -s && node test/_setup.js",
