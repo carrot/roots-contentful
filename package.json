@@ -14,7 +14,7 @@
     "underscore.string": "^3.2.2"
   },
   "devDependencies": {
-    "ava": "sindresorhus/ava#65ae07c",
+    "ava": "^0.9.1",
     "babel-cli": "^6.3.15",
     "babel-core": "^6.3.26",
     "babel-eslint": "^4.1.6",

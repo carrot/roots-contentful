@@ -4,7 +4,7 @@ import {
   mock_contentful,
   unmock_contentful,
   compile_fixture
-} from './_helpers'
+} from '../helpers'
 
 let ctx = { img_path: 'http://dogesay.com/wow.jpg' }
 
@@ -18,7 +18,7 @@ test.before(async t => {
       }
     }]
   })
-  await ctx::compile_fixture('image_view_helper')
+  await ctx::compile_fixture('single-entry--image-view-helper')
   ctx.index_path = `${ctx.public_dir}/index.html`
 })
 

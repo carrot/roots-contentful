@@ -4,7 +4,7 @@ import {
   mock_contentful,
   unmock_contentful,
   compile_fixture
-} from './_helpers'
+} from './helpers'
 
 let ctx = {}
 
@@ -17,7 +17,7 @@ test.before(async t => {
       fields: { title, body }
     }]
   })
-  await ctx::compile_fixture('write')
+  await ctx::compile_fixture('write--as-json')
   ctx.index_path = `${ctx.public_dir}/index.html`
   ctx.posts_path = `${ctx.public_dir}/posts.json`
 })

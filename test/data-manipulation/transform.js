@@ -4,7 +4,7 @@ import {
   mock_contentful,
   unmock_contentful,
   compile_fixture
-} from './_helpers'
+} from '../helpers'
 
 let ctx = {}
 
@@ -19,7 +19,7 @@ test.before(async t => {
     fields: { title, body: ctx.bodies[i] }
   }))
   mock_contentful({ entries: ctx.entries })
-  await ctx::compile_fixture('transform')
+  await ctx::compile_fixture('data-manipulation--transform')
   ctx.index_path = `${ctx.public_dir}/index.html`
   ctx.posts_path = `${ctx.public_dir}/posts.json`
 })
@@ -45,7 +45,7 @@ test('has manipulated data correctly for the project', t => {
 
 test('has written data as json', t => {
   t.ok(helpers.file.exists(ctx.posts_path))
-  t.true(helpers.file.matches_file(ctx.posts_path, 'transform/posts_expected.json'))
+  t.true(helpers.file.matches_file(ctx.posts_path, 'data-manipulation--transform/posts_expected.json'))
 })
 
 test.after(async t => {

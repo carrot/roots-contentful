@@ -1,10 +1,10 @@
 import test from 'ava'
-import errors from '../src/errors'
+import errors from '../../src/errors'
 import {
   mock_contentful,
   unmock_contentful,
   compile_fixture
-} from './_helpers'
+} from '../helpers'
 
 let ctx = {}
 
@@ -17,7 +17,7 @@ test.before(async t => {
 })
 
 test('should throw an error if `sys` is a field name', async t => {
-  t.throws(ctx::compile_fixture('basic'), errors.sys_conflict)
+  t.throws(ctx::compile_fixture('basic--content-type-fields'), errors.sys_conflict)
 })
 
 test.after(async t => {

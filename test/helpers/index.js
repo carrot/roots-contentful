@@ -16,7 +16,7 @@ Array.prototype.includes = do {
 /* eslint-enable */
 
 export const helpers = new RootsUtil.Helpers({
-  base: path.join(__dirname, './fixtures')
+  base: path.join(__dirname, '../fixtures')
 })
 
 export async function compile_fixture (name) {
