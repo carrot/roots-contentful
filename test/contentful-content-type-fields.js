@@ -1,4 +1,5 @@
 import test from 'ava'
+import errors from '../src/errors'
 import {
   mock_contentful,
   unmock_contentful,
@@ -16,10 +17,7 @@ test.before(async t => {
 })
 
 test('should throw an error if `sys` is a field name', async t => {
-  t.throws(
-    ctx::compile_fixture('basic'),
-    'One of your content types has `sys` as a field. This is reserved for storing Contentful system metadata, please rename this field to a different value.'
-  )
+  t.throws(ctx::compile_fixture('basic'), errors.sys_conflict)
 })
 
 test.after(async t => {

@@ -1,4 +1,5 @@
 import test from 'ava'
+import errors from '../src/errors'
 import {
   helpers,
   mock_contentful,
@@ -20,17 +21,11 @@ test.before(async t => {
 })
 
 test('should throw an error when missing an access token', async t => {
-  t.throws(
-    ctx::compile_fixture('missing_token'),
-    'Missing required options for roots-contentful. Please ensure `access_token` and `space_id` are present.'
-  )
+  t.throws(ctx::compile_fixture('missing_token'), errors.no_token)
 })
 
 test('should throw an error without content type id', async t => {
-  t.throws(
-    ctx::compile_fixture('missing_config'),
-    'One or more of your content types is missing an `id` value'
-  )
+  t.throws(ctx::compile_fixture('missing_config'), errors.no_type_id)
 })
 
 test('allows the content type name to be set through a k/v object config', async t => {
