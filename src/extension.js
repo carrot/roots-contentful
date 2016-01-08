@@ -196,10 +196,8 @@ async function set_urls (types) {
 async function set_reference_urls (types) {
   let pathFns = {}
   types = await Promise.all(types)
-  types.forEach((t) => {
-    if (t.path) {
-      pathFns[t.name] = { path: t.path }
-    }
+  types.forEach(({ path, name }) => {
+    if (path) pathFns[name] = { path }
   })
   return types.map(({ template, content }) => {
     if (template) {
