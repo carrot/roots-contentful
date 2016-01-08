@@ -1,4 +1,7 @@
 ul
   - for p in contentful.blog_posts
     li
-      img(src!= asset(p.image, {w: 100, h: 100}))
+      if p.image.fields.file.url == 'http://dogesay.com/wow-query.jpg'
+        img(src!= asset(p.image, {w: 100, h: 100}))
+      else
+        img(src!= asset(p.image))
