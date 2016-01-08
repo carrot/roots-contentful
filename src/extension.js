@@ -280,7 +280,7 @@ async function write_entries (types) {
  * @param {Object} params - Query string params to append to the URL
  * @return {String} - URL string for the asset
  */
-function asset_view_helper (asset = {}, params) {
+function asset_view_helper (asset, params) {
   asset = { fields: { file: {} }, ...asset }
   let url = asset.fields.file.url
   if (params) {
