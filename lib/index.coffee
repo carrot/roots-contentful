@@ -39,6 +39,7 @@ module.exports = (opts) ->
       @roots.config.locals ?= {}
       @roots.config.locals.contentful ?= {}
       @roots.config.locals.asset = asset_view_helper
+      @roots.compileContentfulViews = compile_entries.bind(@, types)
 
     setup: ->
       configure_content(opts.content_types).with(@)
@@ -48,8 +49,6 @@ module.exports = (opts) ->
         .then(transform_entries)
         .then(sort_entries)
         .tap(set_locals)
-        .tap(compile_entries)
-        .tap(write_entries)
 
     ###*
      * Configures content types set in app.coffee. Sets default values if
