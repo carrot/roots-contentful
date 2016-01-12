@@ -44,6 +44,7 @@ module.exports = (opts) ->
       configure_content(opts.content_types).with(@)
         .then(get_all_content)
         .tap(set_urls)
+        .tap(set_reference_urls)
         .then(transform_entries)
         .then(sort_entries)
         .tap(set_locals)
@@ -133,16 +134,54 @@ module.exports = (opts) ->
      * `_url` takes the value `null` if the content type's custom path function
      * returns multiple paths
      * @param {Array} types - content type objects
-     * return {Promise} - promise when urls are set
+     * @return {Promise} - promise when urls are set
     ###
 
     set_urls = (types) ->
       W.map types, (t) ->
         if t.template then W.map t.content, (entry) ->
           paths = t.path(entry)
-          paths = [paths] if _.isString(paths)
-          entry._urls = ("/#{p}.html" for p in paths)
-          entry._url = if entry._urls.length is 1 then entry._urls[0] else null
+          entry = set_entry_url(paths, entry)
+
+    ###*
+     * Checks single entry views for references to other content_types
+     * When present, sets `_url` and `_urls` properties on referenced entries
+     * `_url` takes the value `null` if the content type's custom path function
+     * returns multiple paths
+     * @param {Array} types - content type objects
+     * @return {Promise} - promise when urls are set
+    ###
+
+    set_reference_urls = (types) ->
+      pathFns = _.reduce(types, ((res, type) ->
+        res[type.name] = { path: type.path }
+        return res
+      ), {})
+      typeNames = _.keys(pathFns)
+
+      return W.map types, (t) ->
+        if t.template then W.map t.content, (entry) ->
+          return W.map typeNames, (name) ->
+            if entry[name]
+              refs = _.flatten([entry[name]])
+              return W.map refs, (ref) ->
+                paths = pathFns[name].path(ref.fields)
+                ref.fields = set_entry_url(paths, ref.fields)
+
+    ###*
+      * Sets `_url` and `_urls` properties on single entry views
+      * `_url` takes the value `null` if the content type's custom path function
+      * returns multiple paths
+      * @param {String} paths - String or Array of Strings of paths to assign
+      * @param {Object} entry - entry or entry.fields object to be assigned
+      * @return {Object} - entry object
+    ###
+
+    set_entry_url = (paths, entry) ->
+      paths = [paths] if _.isString(paths)
+      entry._urls = ("/#{p}.html" for p in paths)
+      entry._url = if entry._urls.length is 1 then entry._urls[0] else null
+      return entry
 
     ###*
      * Builds locals object from types objects with content
