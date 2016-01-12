@@ -1,5 +1,6 @@
 import test from 'ava'
 import {
+  async,
   helpers,
   mock_contentful,
   unmock_contentful,
@@ -25,8 +26,8 @@ test.before(async t => {
   ctx.post_path = `${ctx.public_dir}/blog_posts/totes-mcgotes.html`
 })
 
-test("should not have first entry's content in second entry's single view", t => {
-  t.false(helpers.file.contains(ctx.post_path, ctx.body))
+test("should not have first entry's content in second entry's single view", async t => {
+  t.false(await helpers.file.contains(ctx.post_path, ctx.body, { async }))
 })
 
 test.after(async t => {

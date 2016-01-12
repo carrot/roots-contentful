@@ -1,5 +1,6 @@
 import test from 'ava'
 import {
+  async,
   helpers,
   mock_contentful,
   unmock_contentful,
@@ -31,12 +32,12 @@ test.before(async t => {
   ctx.index_path = `${ctx.public_dir}/index.html`
 })
 
-test('renders out image path', t => {
-  t.true(helpers.file.contains(ctx.index_path, `${ctx.regular_img_path}`))
+test('renders out image path', async t => {
+  t.true(await helpers.file.contains(ctx.index_path, `${ctx.regular_img_path}`, { async }))
 })
 
-test('adds query string params to the image', t => {
-  t.true(helpers.file.contains(ctx.index_path, `${ctx.query_img_path}?w=100&h=100`))
+test('adds query string params to the image', async t => {
+  t.true(await helpers.file.contains(ctx.index_path, `${ctx.query_img_path}?w=100&h=100`, { async }))
 })
 
 test.after(async t => {

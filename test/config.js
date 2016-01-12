@@ -1,6 +1,7 @@
 import test from 'ava'
 import errors from '../src/errors'
 import {
+  async,
   helpers,
   mock_contentful,
   unmock_contentful,
@@ -31,8 +32,8 @@ test('should throw an error without content type id', async t => {
 test('allows the content type name to be set through a k/v object config', async t => {
   await ctx::compile_fixture('config--alternative-type')
   ctx.index_path = `${ctx.public_dir}/index.html`
-  t.true(helpers.file.contains(ctx.index_path, ctx.title))
-  t.true(helpers.file.contains(ctx.index_path, ctx.body))
+  t.true(await helpers.file.contains(ctx.index_path, ctx.title, { async }))
+  t.true(await helpers.file.contains(ctx.index_path, ctx.body, { async }))
 })
 
 test.after(async t => {

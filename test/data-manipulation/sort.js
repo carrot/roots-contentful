@@ -1,5 +1,6 @@
 import test from 'ava'
 import {
+  async,
   helpers,
   mock_contentful,
   unmock_contentful,
@@ -24,25 +25,26 @@ test.before(async t => {
   ctx.posts_path = `${ctx.public_dir}/posts.json`
 })
 
-test('compiles project', t => {
-  t.ok(helpers.file.exists(ctx.index_path))
+test('compiles project', async t => {
+  t.ok(await helpers.file.exists(ctx.index_path, { async }))
 })
 
-test('orders data correctly for the project', t => {
+test('orders data correctly for the project', async t => {
   t.plan(4)
   // titles should be order A before B before C
-  t.true(helpers.file.contains_match(
+  t.true(await helpers.file.contains_match(
     ctx.index_path,
-    '^.*(Title A)[/<>\\w\\s]*(Title B)[/<>\\w\\s]*(Title C).*$'
+    '^.*(Title A)[/<>\\w\\s]*(Title B)[/<>\\w\\s]*(Title C).*$',
+    { async }
   ))
-  ctx.bodies.forEach(body => {
-    t.true(helpers.file.contains(ctx.index_path, body))
-  })
+  for (let body of ctx.bodies) {
+    t.true(await helpers.file.contains(ctx.index_path, body, { async }))
+  }
 })
 
-test('has written data as json', t => {
-  t.ok(helpers.file.exists(ctx.posts_path))
-  t.true(helpers.file.matches_file(ctx.posts_path, 'data-manipulation--sort/posts_expected.json'))
+test('has written data as json', async t => {
+  t.ok(await helpers.file.exists(ctx.posts_path, { async }))
+  t.true(await helpers.file.matches_file(ctx.posts_path, 'data-manipulation--sort/posts_expected.json', { async }))
 })
 
 test.after(async t => {

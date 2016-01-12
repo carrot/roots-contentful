@@ -1,5 +1,6 @@
 import test from 'ava'
 import {
+  async,
   helpers,
   mock_contentful,
   unmock_contentful,
@@ -22,14 +23,14 @@ test.before(async t => {
   ctx.posts_path = `${ctx.public_dir}/posts.json`
 })
 
-test('compiles project', t => {
-  t.ok(helpers.file.exists(ctx.index_path))
+test('compiles project', async t => {
+  t.ok(await helpers.file.exists(ctx.index_path, { async }))
 })
 
-test('has written data as json', t => {
-  t.ok(helpers.file.exists(ctx.posts_path))
-  t.true(helpers.file.contains(ctx.posts_path, ctx.title))
-  t.true(helpers.file.contains(ctx.posts_path, ctx.body))
+test('has written data as json', async t => {
+  t.ok(await helpers.file.exists(ctx.posts_path, { async }))
+  t.true(await helpers.file.contains(ctx.posts_path, ctx.title, { async }))
+  t.true(await helpers.file.contains(ctx.posts_path, ctx.body, { async }))
 })
 
 test.after(async t => {

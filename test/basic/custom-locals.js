@@ -1,5 +1,6 @@
 import test from 'ava'
 import {
+  async,
   helpers,
   mock_contentful,
   unmock_contentful,
@@ -21,9 +22,9 @@ test.before(async t => {
   ctx.index_path = `${ctx.public_dir}/index.html`
 })
 
-test('has contentful data available in views under a custom name', t => {
-  t.true(helpers.file.contains(ctx.index_path, ctx.title))
-  t.true(helpers.file.contains(ctx.index_path, ctx.body))
+test('has contentful data available in views under a custom name', async t => {
+  t.true(await helpers.file.contains(ctx.index_path, ctx.title, { async }))
+  t.true(await helpers.file.contains(ctx.index_path, ctx.body, { async }))
 })
 
 test.after(async t => {

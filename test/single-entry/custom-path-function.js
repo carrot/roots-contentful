@@ -1,5 +1,6 @@
 import test from 'ava'
 import {
+  async,
   helpers,
   mock_contentful,
   unmock_contentful,
@@ -24,10 +25,10 @@ test.before(async t => {
   ctx.post_path = `${ctx.public_dir}/blogging/${ctx.category}/real-talk.html`
 })
 
-test('compiles a single entry file using custom path', t => {
-  t.ok(helpers.file.exists(ctx.post_path))
-  t.true(helpers.file.contains(ctx.post_path, ctx.title))
-  t.true(helpers.file.contains(ctx.post_path, ctx.body))
+test('compiles a single entry file using custom path', async t => {
+  t.ok(await helpers.file.exists(ctx.post_path, { async }))
+  t.true(await helpers.file.contains(ctx.post_path, ctx.title, { async }))
+  t.true(await helpers.file.contains(ctx.post_path, ctx.body, { async }))
 })
 
 test.after(async t => {

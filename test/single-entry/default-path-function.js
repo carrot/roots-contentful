@@ -1,5 +1,6 @@
 import test from 'ava'
 import {
+  async,
   helpers,
   mock_contentful,
   unmock_contentful,
@@ -23,19 +24,19 @@ test.before(async t => {
   ctx.post_path = `${ctx.public_dir}/blog_posts/real-talk.html`
 })
 
-test('compiles a single entry file based off the slugified display field', t => {
-  t.ok(helpers.file.exists(ctx.post_path))
-  t.true(helpers.file.contains(ctx.post_path, ctx.title))
-  t.true(helpers.file.contains(ctx.post_path, ctx.body))
+test('compiles a single entry file based off the slugified display field', async t => {
+  t.ok(await helpers.file.exists(ctx.post_path, { async }))
+  t.true(await helpers.file.contains(ctx.post_path, ctx.title, { async }))
+  t.true(await helpers.file.contains(ctx.post_path, ctx.body, { async }))
 })
 
-test('has access to other roots locals inside the single entry view', t => {
-  t.true(helpers.file.contains(ctx.post_path, 'such local'))
+test('has access to other roots locals inside the single entry view', async t => {
+  t.true(await helpers.file.contains(ctx.post_path, 'such local', { async }))
 })
 
-test('sets a _url attribute to allow links to each entry', t => {
-  t.ok(helpers.file.exists(ctx.index_path))
-  t.true(helpers.file.contains(ctx.index_path, '/blog_posts/real-talk.html'))
+test('sets a _url attribute to allow links to each entry', async t => {
+  t.ok(await helpers.file.exists(ctx.index_path, { async }))
+  t.true(await helpers.file.contains(ctx.index_path, '/blog_posts/real-talk.html', { async }))
 })
 
 test.after(async t => {

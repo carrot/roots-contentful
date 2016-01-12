@@ -2,6 +2,7 @@ import path from 'path'
 import slugify from 'underscore.string/slugify'
 import test from 'ava'
 import {
+  async,
   helpers,
   mock_contentful,
   unmock_contentful,
@@ -27,27 +28,27 @@ test.before(async t => {
   ctx.index_path = `${ctx.public_dir}/index.html`
 })
 
-test('compiles a single entry to multiple files', t => {
+test('compiles a single entry to multiple files', async t => {
   t.plan(16)
-  ctx.langs.forEach(lang => {
-    ctx.titles.forEach((title, i) => {
+  for (let lang of ctx.langs) {
+    for (let title of ctx.titles) {
       const output = `/${lang}/${slugify(title)}.html`
       const post_path = path.join(ctx.public_dir, output)
-      t.ok(helpers.file.exists(post_path))
-      t.true(helpers.file.contains(post_path, title))
-      t.true(helpers.file.contains(post_path, ctx.bodies[i]))
-      t.true(helpers.file.contains(post_path, `<p>${output}</p>`))
-    })
-  })
+      t.ok(await helpers.file.exists(post_path, { async }))
+      t.true(await helpers.file.contains(post_path, title, { async }))
+      t.true(await helpers.file.contains(post_path, ctx.bodies[ctx.titles.indexOf(title)], { async }))
+      t.true(await helpers.file.contains(post_path, `<p>${output}</p>`, { async }))
+    }
+  }
 })
 
-test("sets _urls attribute to all of the entry's compiled files", t => {
+test("sets _urls attribute to all of the entry's compiled files", async t => {
   t.plan(4)
-  ctx.langs.forEach(lang => {
-    ctx.titles.forEach(title => {
-      t.true(helpers.file.contains(ctx.index_path, `/${lang}/${slugify(title)}.html`))
-    })
-  })
+  for (let lang of ctx.langs) {
+    for (let title of ctx.titles) {
+      t.true(await helpers.file.contains(ctx.index_path, `/${lang}/${slugify(title)}.html`, { async }))
+    }
+  }
 })
 
 test.after(async t => {
