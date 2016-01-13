@@ -39,11 +39,26 @@ export function mock_contentful (opts = {}) {
   opts = {
     entries: [{
       sys: { sys: 'data' },
+      locale: 'Default Locale',
       fields: {
         title: 'Default Title',
         body: 'Default Body'
       }
     }],
+    space: {
+      sys: {
+        type: 'Space',
+        id: 'cfexampleapi'
+      },
+      name: 'Contentful Example API',
+      locales: [{
+        code: 'en-US',
+        name: 'English'
+      }, {
+        code: 'tlh',
+        name: 'Klingon'
+      }]
+    },
     content_type: {
       name: 'Blog Post',
       displayField: 'title'
@@ -56,8 +71,16 @@ export function mock_contentful (opts = {}) {
         contentType () {
           return Promise.resolve(opts.content_type)
         },
-        entries () {
-          return Promise.resolve(opts.entries)
+        space () {
+          return Promise.resolve(opts.space)
+        },
+        entries (req) {
+          if (req.locale == null) {
+            return Promise.resolve(opts.entries)
+          }
+          return Promise.resolve(opts.entries.filter(
+            entry => entry.sys.locale === req.locale
+          ))
         }
       }
     }

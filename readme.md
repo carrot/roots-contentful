@@ -35,6 +35,9 @@ module.exports =
     contentful
       access_token: 'YOUR_ACCESS_TOKEN'
       space_id: 'xxxxxx'
+      locale: 'tlh'
+      locales_prefix:
+        tlh: 'klingon_'
       content_types:
         blog_posts:
           id: 'xxxxxx'
@@ -76,15 +79,17 @@ If a `template` option is defined for a Content Type in `app.coffee`, roots will
 
 Contentful's [documentation](https://www.contentful.com/developers/documentation/content-delivery-api/#getting-entry) shows the API response when fetching an entry. Your content fields are nested in a `fields` key on the `entry` object. As a convenience, the entry object roots-contentful makes available in your views will have the `fields` key's value set one level higher on the object. System metadata remains accessible on the `sys` key and roots-contentful will raise an error if you have a field named `sys`. Inside your views, the entry object  will have this structure:
 
-```json
-"entry": {
-  "title": "Wow. Such title. Much viral",
-  "author": "The Doge of Venice"
-  # ... the rest of the fields
-  "sys": {
-    "type": "Entry",
-    "id": "cat"
-    # ...
+```js
+{
+  "entry": {
+    "title": "Wow. Such title. Much viral",
+    "author": "The Doge of Venice"
+    // ... the rest of the fields
+    "sys": {
+      "type": "Entry",
+      "id": "cat"
+      # ...
+    }
   }
 }
 ```
@@ -108,6 +113,29 @@ Required. The space ID containing the content you wish to retrieve.
 #### preview
 
 Optional. (Boolean) Allows you use the Contentful Preview API. Also able to be accessed by setting the environment variable `CONTENTFUL_ENV` to `"develop"` (preview api) or `"production"` (default cdn).
+
+#### locales
+Locales allow you to request your content in a different language, `tlh` is Klingon.
+
+##### Global locale
+Optional. (String or Array) Defines locale for all content_types.
+String: `'tlh'`
+Array: `['en-es', 'tlh']`
+Wildcard: `'*'` - grabs all locales from contentful
+
+##### content_type specific locale
+Optional. (String) Define content_types locale, will override global locale. Add `locale: 'tlh'` to any of your content types and you'll retrieve that post in the specific locale.
+
+#### locales_prefix
+Optional. (Object) Defines the prefix given to a group of locales.
+
+```
+locales_prefix:
+  'tlh': 'klingon_'
+  'en-es': 'spanish_'
+```
+
+Lets say you have 3 global locales defined, `['tlh', 'en-us', 'en-es']`, and above is our defined locales_prefix. Since we did not declare `'en-us'` you can access it with `contentful.en_us_blog_posts`. Similarly you can access each preix according to what you've set in the object above. `'tlh'` would be accessible by `contentful.klingon_blog_posts` and `en-es` by `contentful.spanish_blog_posts`.
 
 #### content_types
 
