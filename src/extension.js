@@ -64,11 +64,11 @@ export default class RootsContentful {
     if (cache && Object.keys(locals).length) {
       return locals
     }
-    let configuration = await configure_content(opts)
-    let content = await get_all_content(configuration)
-    await set_urls(content)
-    let entries = await transform_entries(content)
-    let sorted = await sort_entries(entries)
+    let configuration = await this::configure_content(opts)
+    let content = await this::get_all_content(configuration)
+    await this::set_urls(content)
+    let entries = await this::transform_entries(content)
+    let sorted = await this::sort_entries(entries)
     await this::set_locals(sorted)
     await this::compile_entries(sorted)
     await this::write_entries(sorted)
