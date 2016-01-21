@@ -342,10 +342,10 @@ async function compile_entries (types) {
         return compiler.extensions.includes(path.extname(tpl_path).substring(1))
       })
       return entry._urls.map(_url => {
-        this.roots.config.locals.entry = { ...entry, _url }
+        locals.entry = { ...entry, _url }
         return compiler.renderFile(tpl_path, locals)
           .then(compiled => {
-            this.roots.config.locals.entry = null
+            locals.entry = null
             return util.write(_url, compiled.result)
           })
       })
