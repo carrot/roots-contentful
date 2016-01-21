@@ -72,7 +72,7 @@
   "scripts": {
     "build": "babel src -d lib",
     "coverage": "nyc report --reporter=lcov",
-    "coveralls": "coveralls < coverage/lcov.info",
+    "coveralls": "nyc report --reporter=text-lcov | coveralls",
     "debug-test": "npm run test -- --fail-fast",
     "lint": "standard --verbose | snazzy",
     "postpublish": "git push --follow-tags",
@@ -80,7 +80,6 @@
     "prebuild": "npm test",
     "precommit": "npm run lint -s",
     "precoverage": "npm run test",
-    "precoveralls": "nyc report --reporter=text-lcov",
     "prerelease": "npm run build",
     "pretest": "npm run lint -s && node test/_setup.js",
     "release": "npm publish",
