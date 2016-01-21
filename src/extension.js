@@ -80,39 +80,53 @@ export default class RootsContentful {
 /**
  * Configures content types set in app.coffee. Sets default values if
  * optional config options are missing.
- * @param {Array} types - content_types set in app.coffee extension config
+ * @param {Object} opts - app.coffee extension config
  * @return {Promise} - returns an array of configured content types
  */
 async function configure_content (opts) {
   let types = opts.content_types
   let locales = opts.locale
   let locale_prefixes = opts.locales_prefix
-  let localized_types = []
+  // consumes types after adding locale and prefixes to types
   let _types = []
+  // consumes types after adding type paths to types
+  // & locale prefixes to type names
+  let localized_types = []
   let global_locale
 
+  // if locales is wildcard, fetch & set locales
   if (locales === '*') {
     locales = await fetch_all_locales()
   }
 
+  // converts type config to an array if
+  // it is specified as an object
   if (is_plain_object(types)) {
     types = convert_types_to_array(types)
   }
 
+  // update types to contain locale data
+  // and prefixes (null checks === ಠ_ಠ)
   if (Array.isArray(locales)) {
     for (let locale of locales) {
+      // if locale_prefixes is defined...
       let existing_prefix = locale_prefixes != null
+        // set prefix as locale_prefixes[locale]
+        // if it exists else...
         ? locale_prefixes[locale]
         : null
+        // ...set prefix as underscored locale
       let prefix = existing_prefix || `${underscored(locale)}_`
 
       for (let type of types) {
+        // type's locale overrides global locale
         if (type.locale == null) {
           let tmp = deepcopy(type)
           tmp.locale = locale
           tmp.prefix = prefix
           _types.push(tmp)
         } else if (type.prefix == null) {
+          // set prefix, only if it isn't set
           type.prefix = prefix
           _types.push(type)
         }
@@ -123,6 +137,9 @@ async function configure_content (opts) {
     global_locale = true
   }
 
+  // validate type ids, set type paths
+  // and type names, possibly including
+  // type locale prefixes in type names
   for (let type of types) {
     if (!type.id) {
       throw new Error(errors.no_type_id)
