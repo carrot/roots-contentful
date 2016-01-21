@@ -1,0 +1,5 @@
+ul
+  - for p in contentful.en_es_blog_posts
+    li
+      h1= p.title
+      p= p.body
