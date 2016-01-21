@@ -87,48 +87,41 @@ async function configure_content (opts) {
   let types = opts.content_types
   let locales = opts.locale
   let locale_prefixes = opts.locales_prefix
+  let localized_types = []
+  let _types = []
   let global_locale
 
-  async function isWildcard () {
-    if (locales === '*') {
-      locales = await fetch_all_locales()
-    }
+  if (locales === '*') {
+    locales = await fetch_all_locales()
   }
 
-  function reconfigureObj () {
-    if (is_plain_object(types)) {
-      types = convert_types_to_array(types)
-      return types
-    }
+  if (is_plain_object(types)) {
+    types = convert_types_to_array(types)
   }
 
-  function localesArray () {
-    if (Array.isArray(locales)) {
-      for (let locale of locales) {
-        for (let type of types) {
-          let ref
-          if (type.locale == null) {
-            let tmp = deepcopy(type)
-            tmp.locale = locale
-            tmp.prefix = (ref = locale_prefixes != null ? locale_prefixes[locale] : void 0) != null ? ref : (locale.replace(/-/, '_')) + '_'
-            types.push(tmp)
-          } else if (type.prefix == null) {
-            type.prefix = (ref = locale_prefixes != null ? locale_prefixes[locale] : void 0) != null ? ref : (locale.replace(/-/, '_')) + '_'
-          }
+  if (Array.isArray(locales)) {
+    for (let locale of locales) {
+      let existing_prefix = locale_prefixes != null
+        ? locale_prefixes[locale]
+        : null
+      let prefix = existing_prefix || `${underscored(locale)}_`
+
+      for (let type of types) {
+        if (type.locale == null) {
+          let tmp = deepcopy(type)
+          tmp.locale = locale
+          tmp.prefix = prefix
+          _types.push(tmp)
+        } else if (type.prefix == null) {
+          type.prefix = prefix
+          _types.push(type)
         }
       }
-      types = types.filter(type => type.locale != null)
-      return types
-    } else if (typeof locales === 'string') {
-      global_locale = true
-      return global_locale
     }
+    types = _types
+  } else if (typeof locales === 'string') {
+    global_locale = true
   }
-
-  await isWildcard()
-  reconfigureObj()
-  localesArray()
-  let localized_types = []
 
   for (let type of types) {
     if (!type.id) {
@@ -183,11 +176,11 @@ function convert_types_to_array (types) {
  */
 async function get_all_content (types) {
   types = await Promise.all(types)
-  return types.map(async type => {
-    let content = await fetch_content(type)
+  for (const type of types) {
+    const content = await fetch_content(type)
     type.content = await format_content(content)
-    return type
-  })
+  }
+  return types
 }
 
 /**
