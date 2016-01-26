@@ -343,9 +343,11 @@ async function compile_entries (types) {
       })
       return entry._urls.map(_url => {
         locals.entry = { ...entry, _url }
+        locals._path = _url // alias _url as _path in locals
         return compiler.renderFile(tpl_path, locals)
           .then(compiled => {
             locals.entry = null
+            locals._path = null
             return util.write(_url, compiled.result)
           })
       })
