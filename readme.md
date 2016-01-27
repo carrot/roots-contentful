@@ -35,6 +35,7 @@ module.exports =
     contentful
       access_token: 'YOUR_ACCESS_TOKEN'
       space_id: 'xxxxxx'
+      include: 2
       locale: 'tlh'
       locales_prefix:
         tlh: 'klingon_'
@@ -109,6 +110,10 @@ Required. Your Contentful Delivery access token (API key).
 #### space_id
 
 Required. The space ID containing the content you wish to retrieve.
+
+#### include
+
+Optional. Sets the level of deepness to which related entries are linked. Maximum is 10. Defaults to 2, as opposed to Contentful's default of 1.
 
 #### preview
 

@@ -22,6 +22,7 @@ export default class RootsContentful {
   opts = {
     /* defaults */
     cache: true,
+    include: 2,
     /* user-provided */
     ...RootsContentful.opts
   };
@@ -194,7 +195,7 @@ function convert_types_to_array (types) {
 async function get_all_content (types) {
   types = await Promise.all(types)
   for (const type of types) {
-    const content = await fetch_content(type)
+    const content = await this::fetch_content(type)
     type.content = await format_content(content)
   }
   return types
@@ -209,7 +210,7 @@ async function fetch_content ({ id, filters, locale }) {
   let entries = await client.entries({
     ...filters,
     content_type: id,
-    include: 10,
+    include: this.opts.include,
     locale
   })
   return entries
