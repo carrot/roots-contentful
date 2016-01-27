@@ -2,6 +2,7 @@ import path from 'path'
 import mockery from 'mockery'
 import Roots from 'roots'
 import RootsUtil from 'roots-util'
+import {EventEmitter} from 'events'
 
 // polyfill array includes because of
 // https://github.com/sindresorhus/ava/issues/263
@@ -24,6 +25,22 @@ export const helpers = new RootsUtil.Helpers({
 export async function compile_fixture (name) {
   this.public_dir = `${name}/public`
   return await helpers.project.compile(Roots, name)
+}
+
+export async function watch_fixture (name) {
+  this.public_dir = `${name}/public`
+  let project = new EventEmitter()
+  return await new Promise(async (resolve, reject) => {
+    const watcher = new Roots(path.join(__dirname, '../fixtures', name))
+    watcher.on('error', reject)
+    watcher.on('done', () => {
+      project.emit('compile')
+    })
+    resolve({
+      watcher: await watcher.watch(),
+      project
+    })
+  })
 }
 
 export function unmock_contentful () {
