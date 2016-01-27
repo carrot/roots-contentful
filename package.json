@@ -20,7 +20,7 @@
     "coffee-script": "1.10.0",
     "coveralls": "2.x",
     "istanbul": "0.4.1",
-    "mocha": "2.3.4",
+    "mocha": "2.4.2",
     "mockery": "1.4.x",
     "roots": "3.1.0"
   },
