@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "contentful": "^1.1.5",
-    "lodash": "^3.10.1",
+    "lodash": "^4.4.0",
     "pluralize": "^1.2.1",
     "roots-util": "0.1.x",
     "string": "^3.1.3",
