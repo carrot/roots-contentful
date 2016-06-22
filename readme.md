@@ -104,6 +104,8 @@ And can be accessed in your view like this:
 ```jade
   h2= entry.title
   p= markdown(entry.body)
+  if entry.image
+    img(src!= asset(entry.image)
 ```
 
 ### Configuration Options
