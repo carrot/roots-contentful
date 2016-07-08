@@ -8,6 +8,7 @@ path = require 'path'
 
 compile_fixture = (fixture_name, done) ->
   @public = path.join(fixture_name, 'public')
+  @data = path.join(fixture_name, 'data')
   h.project.compile(Roots, fixture_name)
 
 mock_contentful = (opts = {}) ->
@@ -71,6 +72,55 @@ describe 'contentful content type fields', ->
 
   it 'should throw an error if `sys` is a field name', ->
     compile_fixture.call(@, 'basic').should.be.rejected
+
+  after -> unmock_contentful()
+
+describe 'create cache', ->
+  before (done) ->
+    @title = 'Throw Some Ds'
+    @body  = 'Rich Boy selling crick'
+    mock_contentful(entries: [{fields: {title: @title, body: @body}}])
+    compile_fixture.call(@, 'cache').then(-> done()).catch(done)
+
+  it 'compiles basic project', ->
+    p = path.join(@public, 'index.html')
+    h.file.exists(p).should.be.ok
+
+  it 'creates the data directory', ->
+    p = path.join(@data)
+    h.file.exists(p).should.be.ok
+
+  it 'creates the data json', ->
+    p = path.join(@data, '6BYT1gNiIEyIw8Og8aQAO6.json')
+    h.file.exists(p).should.be.ok
+
+    h.file.contains(p, @title).should.be.true
+    h.file.contains(p, @body).should.be.true
+
+  it 'has contentful data available in views', ->
+    p = path.join(@public, 'index.html')
+    h.file.contains(p, @title).should.be.true
+    h.file.contains(p, @body).should.be.true
+
+  after ->
+    h.project.remove_folders('**/data/')
+    unmock_contentful()
+
+describe 'use cache', ->
+  before (done) ->
+    @title = 'Throw Some Ds'
+    @body  = 'Rich Boy selling crick'
+    mock_contentful(entries: [{fields: {title: @title, body: @body}}])
+    compile_fixture.call(@, 'cache_use').then(-> done()).catch(done)
+
+  it 'compiles basic project', ->
+    p = path.join(@public, 'index.html')
+    h.file.exists(p).should.be.ok
+
+  it 'has contentful data available in views', ->
+    p = path.join(@public, 'index.html')
+    h.file.contains(p, @title).should.be.true
+    h.file.contains(p, @body).should.be.true
 
   after -> unmock_contentful()
 

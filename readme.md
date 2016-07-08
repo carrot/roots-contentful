@@ -120,6 +120,10 @@ Required. Your Contentful Delivery access token (API key).
 
 Required. The space ID containing the content you wish to retrieve.
 
+#### cache
+
+Optional. (String) Allows you to cache responses from Contentful's API. The value is the path to the directory you intend to store the data in. Ex: `./contentful-data`
+
 #### preview
 
 Optional. (Boolean) Allows you use the Contentful Preview API. Also able to be accessed by setting the environment variable `CONTENTFUL_ENV` to `"develop"` (preview api) or `"production"` (default cdn).

@@ -1,6 +1,7 @@
 _           = require 'lodash'
 W           = require 'when'
 S           = require 'string'
+fs          = require 'fs'
 path        = require 'path'
 contentful  = require 'contentful'
 pluralize   = require 'pluralize'
@@ -85,17 +86,40 @@ module.exports = (opts) ->
       , []
 
     ###*
+     * Checks if a file or directory exists
+     * @param {String} path - File or directory path
+     * @return {Boolean} - returns success/failure
+    ###
+
+    fsExistsSync = (path) ->
+      try
+        fs.accessSync(path, fs.F_OK)
+        true
+      catch e
+        false
+
+    ###*
      * Fetches data from Contentful for content types, and formats the raw data
+     * Stores/fetches content locally if requested
      * @param {Array} types - configured content_type objects
      * @return {Promise} - returns formatted locals object with all content
     ###
 
     get_all_content = (types) ->
+      fs.mkdirSync(opts.cache) if opts.cache && !fsExistsSync(opts.cache)
+
       W.map types, (t) ->
-        fetch_content(t)
-          .then(format_content)
-          .then((c) -> t.content = c)
-          .yield(t)
+        if opts.cache && fsExistsSync("#{opts.cache}/#{t.id}.json")
+          fetch_content_from_file(t)
+            .then(format_content)
+            .then((c) -> t.content = c)
+            .yield(t)
+        else
+          fetch_content(t)
+            .then((c) -> record_content(c, t))
+            .then(format_content)
+            .then((c) -> t.content = c)
+            .yield(t)
 
     ###*
      * Fetch entries for a single content type object
@@ -109,6 +133,30 @@ module.exports = (opts) ->
           _.merge(type.filters, content_type: type.id, include: 10)
         )
       )
+
+    ###*
+     * Fetch entries for a single content type object from a local JSON file
+     * @param {Object} type - content type object
+     * @return {Promise} - returns response from JSON file
+    ###
+
+    fetch_content_from_file = (type) ->
+      contents = fs.readFileSync "#{opts.cache}/#{type.id}.json"
+      W(JSON.parse(contents))
+
+    ###*
+     * Records content from Contentful into JSON files
+     * @param {Object} content - entries API response for a content type
+     * @param {Object} type - content type object
+     * @return {Promise} - passes content through
+    ###
+
+    record_content = (content, type) ->
+      if opts.cache
+        fs.writeFile "#{opts.cache}/#{type.id}.json", JSON.stringify(content), (err,data) ->
+          throw err if err
+
+      content
 
     ###*
      * Formats raw response from Contentful
