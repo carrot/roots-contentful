@@ -193,7 +193,7 @@ module.exports = (opts) ->
         W.map t.content, (entry) =>
           template = path.join(@roots.root, t.template)
           compiler = _.find @roots.config.compilers, (c) ->
-            _.contains(c.extensions, path.extname(template).substring(1))
+            _.includes(c.extensions, path.extname(template).substring(1))
           W.map entry._urls, (url) =>
             @roots.config.locals.entry = _.assign({}, entry, { _url: url })
             compiler.renderFile(template, @roots.config.locals)
