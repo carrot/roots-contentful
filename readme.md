@@ -147,7 +147,23 @@ Optional. Path relative to the roots project of a template for a single entry vi
 
 #### filters
 
-Optional. Takes an object with different filter criteria, see examples of how to structure the object in [Contentful's docs](https://www.contentful.com/developers/documentation/content-delivery-api/javascript/#search-filter).
+Optional. Takes an object with different search and filter criteria. See examples of how to structure the object in [Contentful's docs](https://www.contentful.com/developers/docs/references/content-delivery-api/#/reference/search-parameters).
+
+For example, the following [limits](https://www.contentful.com/developers/docs/references/content-delivery-api/#/reference/search-parameters/limit) the API response to 5 entries, [filters](https://www.contentful.com/developers/docs/references/content-delivery-api/#/reference/search-parameters/array-equalityinequality/query-entries) by the `feature` field and [orders](https://www.contentful.com/developers/docs/references/content-delivery-api/#/reference/search-parameters/order) items in the response by the `sys.createdAt` property. Notice the minus sign, which reverses the sort order.
+
+```coffee
+content_types:
+  blog_posts:
+    id: 'xxxxxx'
+    template: 'views/_post.jade'
+    path: (entry) -> "blog/#{entry.permalink}"
+    filters: {
+               'limit': '5',
+               'fields.feature': 'true',
+               'order': '-sys.createdAt'
+             }
+    transform: transformFunction
+```
 
 #### path
 
