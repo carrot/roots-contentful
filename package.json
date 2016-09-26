@@ -22,7 +22,7 @@
     "istanbul": "0.4.4",
     "mocha": "2.5.3",
     "mockery": "1.7.x",
-    "roots": "4.0.1"
+    "roots": "5.0.0"
   },
   "directories": {
     "test": "test"
