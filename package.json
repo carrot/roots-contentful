@@ -19,7 +19,7 @@
     "chai-as-promised": "5.3.0",
     "coffee-script": "1.11.0",
     "coveralls": "2.x",
-    "istanbul": "0.4.4",
+    "istanbul": "0.4.5",
     "mocha": "2.5.3",
     "mockery": "1.7.x",
     "roots": "5.0.0"
