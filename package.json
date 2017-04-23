@@ -21,7 +21,7 @@
     "coveralls": "2.x",
     "istanbul": "0.4.5",
     "mocha": "2.5.3",
-    "mockery": "1.7.x",
+    "mockery": "2.0.0",
     "roots": "5.0.0"
   },
   "directories": {
