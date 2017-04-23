@@ -17,7 +17,7 @@
   "devDependencies": {
     "chai": "3.5.0",
     "chai-as-promised": "6.0.0",
-    "coffee-script": "1.12.4",
+    "coffee-script": "1.12.5",
     "coveralls": "2.x",
     "istanbul": "0.4.5",
     "mocha": "2.5.3",
