@@ -15,7 +15,7 @@
     "when": "3.7.x"
   },
   "devDependencies": {
-    "chai": "3.5.0",
+    "chai": "4.0.1",
     "chai-as-promised": "6.0.0",
     "coffee-script": "1.12.4",
     "coveralls": "2.x",
